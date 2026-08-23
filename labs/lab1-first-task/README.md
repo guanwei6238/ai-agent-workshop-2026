@@ -52,13 +52,13 @@ git diff
 cd .. && ./verify.sh
 ```
 
-把結果填進 [`observation-sheet.md`](observation-sheet.md) 的第一欄。
+把結果填進 [`checklist.md`](checklist.md) 的第一欄。
 
 ### 5. 第二次：把規格變成 prompt ← 這步是重點
 
 ```bash
 cd habit
-git checkout . && ./reset.sh
+./restore.sh                  # 程式碼 + 資料一起還原
 ```
 
 **看第 1 次哪幾項沒過，那些就是你要補進 prompt 的東西。**
@@ -93,6 +93,6 @@ git checkout . && ./reset.sh
 | --- | --- |
 | `SPEC.md` | 規格書，**先讀這個** |
 | `verify.sh` | 照規格逐項檢查 |
-| `observation-sheet.md` | 檢核表，填兩次的結果 |
+| `checklist.md` | 檢核表，填兩次的結果 |
 | `check-imports.ts` | 找沒用到的 import（`verify.sh` 會呼叫） |
 | `habit/` | 素材專案 |

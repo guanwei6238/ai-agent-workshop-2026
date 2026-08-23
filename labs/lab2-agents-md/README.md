@@ -8,7 +8,16 @@
 `grades/` 是一個**能跑但很醜**的成績計算工具，只有兩個 `.ts` 檔。
 
 ```bash
-cd grades && node report.ts
+cd grades
+bash init.sh          # git repo + 存一份重構前的報表當基準
+node report.ts
+```
+
+`init.sh` 會把重構前的輸出存成 `baseline.txt`。
+每次重構完都要比對，確認**功能沒被改壞**：
+
+```bash
+node report.ts | diff baseline.txt -      # 沒有輸出就是一模一樣
 ```
 
 先看一眼 `calc.ts`。它到處是 `any`、英文的廢話註解、`+` 串字串、
@@ -30,7 +39,7 @@ git diff        # 或直接看檔案
 ### 2. 加約束
 
 ```bash
-cd grades && git checkout .        # 還原
+./restore.sh                       # 還原程式碼（連 agent 新增的檔一起清）
 cp ../AGENTS.example.md AGENTS.md
 ```
 

@@ -101,6 +101,6 @@ if (Object.keys(hist).length) {
 mkdirSync(join(HERE, "results"), { recursive: true });
 writeFileSync(
   join(HERE, "results", `${version}.json`),
-  JSON.stringify({ version, n, passed, totalTokens, hist, rows }, null, 2),
+  JSON.stringify({ version, n, backend: backend ?? process.env.ZEN_BACKEND ?? "cli", passed, totalTokens, hist, rows }, null, 2),
 );
 console.log(`\n寫入 results/${version}.json`);

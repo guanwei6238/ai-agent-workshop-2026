@@ -49,12 +49,20 @@ export function score(question: string, chunk: Chunk): number {
   return chunk.text.includes(question) ? 1 : 0;
 }
 
-/** 取分數最高的前 k 段。 */
-export function retrieve(question: string, k = 2, chunks = loadChunks()): Chunk[] {
+/** 取分數最高的前 k 段，連分數一起回傳（分數會讓你看到「兩段同分」這種事）。 */
+export function retrieveScored(
+  question: string,
+  k = 2,
+  chunks = loadChunks(),
+): Array<{ chunk: Chunk; score: number }> {
   return chunks
-    .map((c) => ({ c, s: score(question, c) }))
-    .filter((x) => x.s > 0)
-    .sort((a, b) => b.s - a.s)
-    .slice(0, k)
-    .map((x) => x.c);
+    .map((c) => ({ chunk: c, score: score(question, c) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, k);
+}
+
+/** 只要段落、不要分數的版本。 */
+export function retrieve(question: string, k = 2, chunks = loadChunks()): Chunk[] {
+  return retrieveScored(question, k, chunks).map((x) => x.chunk);
 }

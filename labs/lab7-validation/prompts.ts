@@ -36,49 +36,18 @@ const SCHEMA = `{
   "status":    "pending" | "shipped",
   "tracking_no": string（status 為 shipped 時必填）,
   "order_date": string（YYYY-MM-DD）,
-  "ship_by":    string（YYYY-MM-DD}
+  "ship_by":    string（YYYY-MM-DD）
 }`;
 
 const V2 = (email: string) => `幫我從這封信裡把訂單資料整理成 JSON。
 
 ${email}
 
-<!-- SCHEMA_START -->
-${SCHEMA}
-<!-- SCHEMA_END -->
+<!-- TODO(1)：把檔案上方 SCHEMA 常數的內容貼到這裡 -->
 
-<!-- TODO(2)：放一個「壞掉的輸出長什麼樣、以及它壞在哪」的例子 --><!-- BROKEN_EXAMPLE_START -->
-{
-  "order_id": 123,
-  "customer": 456,
-  "currency": "INVALID",
-  "items": [{"name": "test", "unit_price": -1, "qty": 0}],
-  "subtotal": 0,
-  "discount": 100,
-  "total": -50,
-  "status": "unknown",
-  "tracking_no": "",
-  "order_date": "bad-date",
-  "ship_by": "bad-date"
-}<-- BROKEN_EXAMPLE_END -->
+<!-- TODO(2)：放一個「壞掉的輸出長什麼樣、以及它壞在哪」的例子 -->
 
-<!-- TODO(3)：寫死輸出規定（只能有 JSON，其他一律不行） -->
-
-<!-- OUTPUT_RULES -->
-- Output must be pure JSON object with no explanatory text
-- Must not contain Markdown code fences marker characters
-- No introductions, conclusions, or any explanatory text
-- Must match fields and types defined in SCHEMA
-- subtotal must equal sum of all items (unit_price × qty)
-- total must equal subtotal - discount
-- currency must be one of TWD USD or JPY
-- When status is shipped, tracking_no is required
-- When status is pending, tracking_no must not be provided
-- order_date and ship_by must be YYYY-MM-DD format
-- discount must be less than or equal to subtotal
-- All prices must be non-negative
-- qty must be positive integer
-`;
+<!-- TODO(3)：寫死輸出規定（只能有 JSON，其他一律不行） -->`;
 
 // ────────────────────────────────────────────────────── v3
 

@@ -23,7 +23,7 @@ cd lab0-setup && ./check.sh
 | [lab0-setup](lab0-setup/) | 1 | 35 | 從零裝到跑通 | — |
 | [lab1-first-task](lab1-first-task/) | 1 | 60 | 用 agent 做一個真的功能 | pi |
 | [lab2-agents-md](lab2-agents-md/) | 2 | 60 | AGENTS.md + skill，量遵守率 | pi |
-| [lab4-loop](lab4-loop/) | 2 | 35 | 做→檢查→餵回去→再做 | Lab 2 |
+| [lab4-loop](lab4-loop/) | 2 | 30 | 做→檢查→餵回去→再做 | Lab 2 |
 | [lab5-rag](lab5-rag/) | 3 | 50 | 最小 RAG | pi |
 | [lab6-product](lab6-product/) | 3 | 49 | 把 LLM 放進產品 | pi |
 | [lab7-validation](lab7-validation/) | 4 | 60 | 輸出驗證器 | pi |
@@ -31,9 +31,15 @@ cd lab0-setup && ./check.sh
 
 > Lab 3 不在課堂上。原因見 `appendix-mcp/README.md`。
 
-## 全部都能離線跑
+## 哪些能離線跑
 
-每個會呼叫模型的 lab 都支援 `mock` backend——假模型、不花額度、不用網路：
+| Lab | 離線可行嗎 |
+| --- | --- |
+| lab5 / lab7 | ✓ 完整支援 `mock` |
+| lab6 | △ 步驟 1–3 可以；**步驟 4（互相攻擊）需要真模型** |
+| lab1 / lab2 / lab4 | ✗ **需要 pi**，沒有 mock 路徑 |
+
+支援的部分這樣跑：
 
 ```bash
 node run.ts --version v1 --n 10 --backend mock     # lab7
@@ -57,3 +63,8 @@ ZEN_BACKEND=mock node server.ts                    # lab6
 **為什麼預設走 `cli`**：學生在 Lab 0 已經 `/login` 過了，走 pi 就不用再處理 API key，
 少一個出錯點。而且直接裸打 API 的匿名額度非常低（實測第 2、3 次就被擋，且是以「天」計）——
 Lab 6 步驟 2 會刻意讓你撞一次，那本身就是教材。
+
+## 給講師
+
+`INSTRUCTOR.md` 在 lab5 與 lab7 裡，包含參考解答與實測數據。
+發給學生前記得先確認要不要一起發。

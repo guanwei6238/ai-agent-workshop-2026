@@ -32,6 +32,16 @@ if (data.length === 0) {
   process.exit(1);
 }
 
+// 三次跑的條件必須一樣，不然畫出來的圖是假的而你看不出來。
+const ns = [...new Set(data.map((d) => d.n))];
+const backends = [...new Set(data.map((d) => d.backend ?? "?"))];
+if (ns.length > 1 || backends.length > 1) {
+  console.log("\n  \x1b[31m✗ 三次跑的條件不一樣，這張圖沒有意義\x1b[0m");
+  for (const d of data) console.log(`      ${d.version}: n=${d.n}  backend=${d.backend ?? "?"}`);
+  console.log("\n  用同樣的 --n 與同樣的 backend 重跑，再回來畫圖。\n");
+  process.exit(1);
+}
+
 console.log("\n  版本                  通過率            平均 tokens");
 console.log("  " + "─".repeat(56));
 for (const d of data) {

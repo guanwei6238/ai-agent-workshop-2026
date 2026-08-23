@@ -8,6 +8,17 @@
 
 **Prompt 是請求。請求可以被忽略。**
 
+## 開始之前
+
+這個 Lab 接在 Lab 2 後面，需要它留下的東西：
+
+```bash
+ls ../lab2-agents-md/grades/AGENTS.md          # 應該存在（Lab 2 步驟 2 產生）
+cd ../lab2-agents-md/grades && ./restore.sh    # 還原到乾淨狀態
+cd ../../lab4-loop
+node check.ts ../lab2-agents-md/grades         # 起跑線：20 處違規
+```
+
 ## 做法
 
 ```bash
@@ -20,7 +31,7 @@
 做  →  檢查  →  把「具體的」錯誤餵回去  →  再做
 ```
 
-看一下 `loop.sh`，它總共不到 40 行。真正的關鍵是這句：
+看一下 `loop.sh`，它總共約 50 行。真正的關鍵是這句：
 
 ```bash
 run_agent "剛才的修改沒有通過專案的規範檢查，違規如下：

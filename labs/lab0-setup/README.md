@@ -1,10 +1,20 @@
 # Lab 0：環境健檢
 
-> 25 分鐘，四個步驟。
+> 35 分鐘，四個步驟。**教室電腦不會預裝，全部當場自己來。**
 
 ## ① 裝 pi
 
-到 <https://pi.dev/> 複製對應你系統的指令。Linux / macOS 是：
+到 <https://pi.dev/> 複製對應你系統的指令。
+
+**Windows 11（教室電腦）**：
+
+```powershell
+powershell -c "irm https://pi.dev/install.ps1 | iex"
+```
+
+它會順便問你要不要裝 Node —— **說要**。
+
+**Linux / macOS**：
 
 ```bash
 curl -fsSL https://pi.dev/install.sh | sh
@@ -12,7 +22,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 
 看到 `Pi was installed successfully` 就過了。
 
-> 教室電腦課前已經裝好，這一步只要確認 `pi` 叫得出來。
+> ⚠️ **裝完一定要開一個新的終端機**，否則 `PATH` 不會生效 —— 這是最常見的卡關點。
 
 ## ② 拿一把 key
 

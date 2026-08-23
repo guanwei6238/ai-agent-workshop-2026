@@ -10,7 +10,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ask } from "../shared/zen-client.ts";
-import { retrieve } from "./retrieve.ts";
+import { retrieveScored } from "./retrieve.ts";
 import type { Backend } from "../shared/zen-client.ts";
 
 const argv = process.argv.slice(2);
@@ -38,12 +38,14 @@ async function plain() {
 }
 
 async function withRag() {
-  const hits = retrieve(question);
+  const scored = retrieveScored(question);
+  const hits = scored.map((x) => x.chunk);
   console.log("\n\x1b[2m── 有檢索 ──\x1b[0m");
   if (hits.length === 0) {
     console.log("\x1b[33m!\x1b[0m 檢索到 0 段。retrieve.ts 的 score() 還沒改吧？");
   } else {
-    console.log(`\x1b[2m檢索到 ${hits.length} 段：${hits.map((h) => h.heading).join("、")}\x1b[0m`);
+    const shown = scored.map((x) => `${x.chunk.heading}(${x.score})`).join("、");
+    console.log(`\x1b[2m檢索到 ${hits.length} 段：${shown}\x1b[0m`);
   }
   const context = hits.map((h) => h.text).join("\n\n---\n\n");
   const prompt = `以下是社團手冊的相關段落：
