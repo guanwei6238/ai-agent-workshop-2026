@@ -1,0 +1,10 @@
+{
+  "course": "計算機概論",
+  "students": [
+    { "id": "S001", "name": "陳小明", "hw": [88, 92, 0, 75], "midterm": 78, "final": 84, "attendance": 14 },
+    { "id": "S002", "name": "林大華", "hw": [95, 91, 89, 93], "midterm": 91, "final": 88, "attendance": 16 },
+    { "id": "S003", "name": "王美玲", "hw": [60, 0, 0, 55], "midterm": 45, "final": 52, "attendance": 8 },
+    { "id": "S004", "name": "張志豪", "hw": [78, 82, 80, 79], "midterm": 68, "final": 91, "attendance": 15 },
+    { "id": "S005", "name": "李佳穎", "hw": [100, 98, 95, 97], "midterm": 96, "final": 94, "attendance": 16 }
+  ]
+}

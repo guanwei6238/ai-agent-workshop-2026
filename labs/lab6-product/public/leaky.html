@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>社課小幫手（錯誤示範）</title>
+<style>
+  body { font-family: system-ui, "Noto Sans CJK TC", sans-serif; max-width: 640px;
+         margin: 40px auto; padding: 0 20px; line-height: 1.7; color: #1c1c1a; }
+  h1 { font-size: 22px; }
+  .tag { display:inline-block; background:#fee2e2; color:#b91c1c; font-size:12px;
+         padding:2px 8px; border-radius:4px; margin-left:8px; vertical-align:middle }
+  .box { background:#fef2f2; border-left:4px solid #b91c1c; padding:12px 16px;
+         border-radius:4px; margin:20px 0 }
+  code { background:#f3f3f0; padding:1px 5px; border-radius:3px }
+</style>
+</head>
+<body>
+  <h1>社課小幫手 <span class="tag">錯誤示範</span></h1>
+
+  <div class="box">
+    這一頁刻意把 API key 放到前端了。<br>
+    <b>你的任務：把它找出來。</b>
+  </div>
+
+  <p>三個地方都試試看：</p>
+  <ol>
+    <li>在這一頁按右鍵 → 檢視網頁原始碼</li>
+    <li>DevTools → Console，輸入 <code>APP_CONFIG</code></li>
+    <li>DevTools → Sources，翻一下這頁的 script</li>
+  </ol>
+
+  <p>找到之後，看看下面那個「加密過」的版本是不是就安全了。</p>
+
+<script>
+// 開發者可能會這樣寫：把設定放在一個全域物件裡。
+const APP_CONFIG = {
+  appName: "社課小幫手",
+  model: "mimo-v2.5-free",
+  apiKey: "__API_KEY__",          // ← 就是這一行
+};
+
+// 有人覺得「編碼一下就看不到了」。真的嗎？
+const _cfg = { k: "__API_KEY_B64__" };
+function getKey() { return atob(_cfg.k); }
+
+window.APP_CONFIG = APP_CONFIG;
+window.getKey = getKey;
+console.log("%c提示：在 Console 打 APP_CONFIG 或 getKey()", "color:#b91c1c;font-weight:bold");
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+# Lab 教材
+
+全部用 **Node 24 直接跑 `.ts`**，不需要 `npm install`、不需要 `tsc`。
+
+```bash
+node --version      # 需要 22 以上
+```
+
+## 開始之前
+
+先照 [lab0-setup](lab0-setup/) 裝好 pi 並 `/login` 登入一次。
+**之後所有 lab 都透過 `pi` 呼叫，不需要設 API key。**
+
+```bash
+export ZEN_MODEL=mimo-v2.5-free      # 選用。備援：hy3-free / nemotron-3.5-lightning-free
+cd lab0-setup && ./check.sh
+```
+
+## 一覽
+
+| Lab | 節次 | 分鐘 | 主題 | 需要 |
+| --- | --- | --- | --- | --- |
+| [lab0-setup](lab0-setup/) | 1 | 35 | 從零裝到跑通 | — |
+| [lab1-first-task](lab1-first-task/) | 1 | 60 | 用 agent 做一個真的功能 | pi |
+| [lab2-agents-md](lab2-agents-md/) | 2 | 60 | AGENTS.md + skill，量遵守率 | pi |
+| [lab4-loop](lab4-loop/) | 2 | 35 | 做→檢查→餵回去→再做 | Lab 2 |
+| [lab5-rag](lab5-rag/) | 3 | 50 | 最小 RAG | pi |
+| [lab6-product](lab6-product/) | 3 | 49 | 把 LLM 放進產品 | pi |
+| [lab7-validation](lab7-validation/) | 4 | 60 | 輸出驗證器 | pi |
+| [appendix-mcp](appendix-mcp/) | — | — | MCP（課後自習） | pi |
+
+> Lab 3 不在課堂上。原因見 `appendix-mcp/README.md`。
+
+## 全部都能離線跑
+
+每個會呼叫模型的 lab 都支援 `mock` backend——假模型、不花額度、不用網路：
+
+```bash
+node run.ts --version v1 --n 10 --backend mock     # lab7
+node ask.ts --both --backend mock "你的問題"        # lab5
+ZEN_BACKEND=mock node server.ts                    # lab6
+```
+
+假模型的行為是**模擬**，數字不能拿來宣稱真模型的表現。
+但流程一模一樣，網路掛掉課照上。
+
+## 共用的東西
+
+`shared/zen-client.ts` 是所有 lab 呼叫模型的入口，三個 backend：
+
+| backend | 怎麼做 | 什麼時候用 |
+| --- | --- | --- |
+| `cli`（預設） | 跑 `pi --provider opencode --model … -p` | **平常都用這個**。走 pi 的登入，不用環境變數 |
+| `http` | 直接 `fetch` Zen 的 API | Lab 6 步驟 2 示範「Server + API key」；也是 pi 壞掉時的備援。要 `OPENCODE_API_KEY` |
+| `mock` | 本機假模型 | 離線、省額度、課前彩排 |
+
+**為什麼預設走 `cli`**：學生在 Lab 0 已經 `/login` 過了，走 pi 就不用再處理 API key，
+少一個出錯點。而且直接裸打 API 的匿名額度非常低（實測第 2、3 次就被擋，且是以「天」計）——
+Lab 6 步驟 2 會刻意讓你撞一次，那本身就是教材。
