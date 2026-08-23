@@ -32,9 +32,24 @@ const add = (rule: string, file: string, line: number, text: string, why: string
 
 for (const f of files) {
   const lines = readFileSync(f, "utf8").split("\n");
+
+  // 追蹤「現在是不是在一個具名常數的區塊裡」。
+  // 沒有這個的話，把權重抽成 const WEIGHTS = { hw: 0.3, ... } 之後，
+  // 裡面每一行都會被 R4 誤判成魔術數字——規則就變成永遠滿足不了。
+  let constDepth = 0;
+
   lines.forEach((ln, i) => {
     const n = i + 1;
     const code = ln.replace(/\/\/.*$/, "");
+
+    const opensConst = /^\s*(export\s+)?const\s+[A-Z][A-Z_0-9]*\s*[:=]/.test(code);
+    if (opensConst) constDepth = 0;
+    const inNamedConst = opensConst || constDepth > 0;
+    if (opensConst || constDepth > 0) {
+      constDepth += (code.match(/[{[]/g) ?? []).length;
+      constDepth -= (code.match(/[}\]]/g) ?? []).length;
+      if (constDepth < 0) constDepth = 0;
+    }
 
     // R1 禁止 any
     if (/\bany\b/.test(code) && !/^\s*\*/.test(ln))
@@ -50,9 +65,14 @@ for (const f of files) {
       add("R3", f, n, ln, "用 + 串字串。請改成 template literal。");
 
     // R4 魔術數字（浮點權重、分數門檻）
-    if (/(?<![\w.])(0\.[1-9]\d*|[5-9]\d|100)(?![\w.])/.test(code) && !/^\s*(import|export type)/.test(code)) {
-      const isConst = /^\s*(export\s+)?const\s+[A-Z_]+\s*=/.test(code);
-      if (!isConst) add("R4", f, n, ln, "魔術數字。權重與門檻要抽成有名字的常數。");
+    // 百分比的 * 100 / / 100 是慣用寫法，不算魔術數字
+    const codeNoPercent = code.replace(/[*/]\s*100\b/g, "");
+    if (
+      /(?<![\w.])(0\.[1-9]\d*|[5-9]\d|100)(?![\w.])/.test(codeNoPercent) &&
+      !/^\s*(import|export type)/.test(code) &&
+      !inNamedConst
+    ) {
+      add("R4", f, n, ln, "魔術數字。權重與門檻要抽成有名字的常數。");
     }
   });
 

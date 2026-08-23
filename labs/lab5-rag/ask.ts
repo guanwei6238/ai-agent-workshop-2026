@@ -6,6 +6,9 @@
  *   node ask.ts --both "期末成果發表會每組報告幾分鐘？"
  */
 
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { ask } from "../shared/zen-client.ts";
 import { retrieve } from "./retrieve.ts";
 import type { Backend } from "../shared/zen-client.ts";
@@ -22,7 +25,15 @@ if (!question) {
 
 async function plain() {
   console.log("\n\x1b[2m── 沒有檢索 ──\x1b[0m");
-  const r = await ask(question, { backend });
+  // ⚠️ 兩件事都要做，才測得出「它本來知不知道」：
+  //   1. 在空目錄裡跑（不然手冊就在旁邊）
+  //   2. 明講不要讀檔 —— 因為 agent 有 grep/find，它會去整個檔案系統找
+  // 少了第 2 點，它會自己把手冊翻出來，然後你以為它「本來就知道」。
+  const empty = mkdtempSync(join(tmpdir(), "no-context-"));
+  const r = await ask(
+    `${question}\n\n（只用你已知的資訊回答，不要去讀任何檔案。）`,
+    { backend, cwd: empty },
+  );
   console.log(r.text);
 }
 

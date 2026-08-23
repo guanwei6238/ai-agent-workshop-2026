@@ -12,7 +12,7 @@ node --version      # 需要 22 以上
 **之後所有 lab 都透過 `pi` 呼叫，不需要設 API key。**
 
 ```bash
-export ZEN_MODEL=mimo-v2.5-free      # 選用。備援：hy3-free / nemotron-3.5-lightning-free
+export ZEN_MODEL=nemotron-3.5-lightning-free   # 選用。備援：hy3-free / mimo-v2.5-free
 cd lab0-setup && ./check.sh
 ```
 

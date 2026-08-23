@@ -45,7 +45,7 @@ else
 fi
 
 if [ "$PASS_A" = 1 ] && [ "$PASS_B" = 1 ]; then
-  MODEL="${ZEN_MODEL:-mimo-v2.5-free}"
+  MODEL="${ZEN_MODEL:-nemotron-3.5-lightning-free}"
   echo -e "  ${D}試打一次 $MODEL …${N}"
   if OUT=$(timeout 90 pi --provider opencode --model "$MODEL" -p "只回覆兩個字：成功" 2>&1); then
     ok "模型有回應：$(echo "$OUT" | head -1 | cut -c1-40)"

@@ -1,0 +1,16 @@
+{
+  "order_id": "PO-20260830-022",
+  "customer": "黑客社",
+  "currency": "TWD",
+  "items": [
+    {"name": "Raspberry Pi 5 (8GB)", "unit_price": 2650, "qty": 2},
+    {"name": "USB 轉序列傳輸線", "unit_price": 180, "qty": 5},
+    {"name": "麵包板", "unit_price": 95, "qty": 4}
+  ],
+  "subtotal": 6580,
+  "discount": 300,
+  "total": 6280,
+  "status": "pending",
+  "order_date": "2026-08-30",
+  "ship_by": "2026-09-10"
+}

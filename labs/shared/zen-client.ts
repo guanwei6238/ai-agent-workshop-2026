@@ -21,6 +21,13 @@ export interface AskOptions {
   seed?: number;
   /** mock backend 用：第幾次嘗試（重試迴路用）。0 起算 */
   attempt?: number;
+  /**
+   * cli backend 用：在哪個目錄跑。
+   *
+   * ⚠️ 這個很重要：pi 是 agent，它有讀檔工具。如果你想問「它本來知不知道」，
+   * 就不能在資料旁邊問——它會自己去讀，然後你以為它「本來就知道」。
+   */
+  cwd?: string;
 }
 
 export interface AskResult {
@@ -32,7 +39,7 @@ export interface AskResult {
   ms: number;
 }
 
-const DEFAULT_MODEL = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
+const DEFAULT_MODEL = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
 const DEFAULT_BACKEND = (process.env.ZEN_BACKEND as Backend) ?? "cli";
 
 export async function ask(prompt: string, opts: AskOptions = {}): Promise<AskResult> {
@@ -53,7 +60,7 @@ export async function ask(prompt: string, opts: AskOptions = {}): Promise<AskRes
     tokens = r.tokens ?? estimateTokens(prompt + r.text);
     estimate = r.tokens === undefined;
   } else {
-    text = await askCli(prompt, model, opts.system);
+    text = await askCli(prompt, model, opts.system, opts.cwd);
     tokens = estimateTokens(prompt + text);
   }
 
@@ -64,7 +71,7 @@ const estimateTokens = (s: string) => Math.ceil(s.length / 4);
 
 // ---------------------------------------------------------------- cli
 
-function askCli(prompt: string, model: string, system?: string): Promise<string> {
+function askCli(prompt: string, model: string, system?: string, cwd?: string): Promise<string> {
   const full = system ? `${system}\n\n---\n\n${prompt}` : prompt;
   const args = ["--provider", "opencode", "--model", model, "-p", full];
   return new Promise((resolve, reject) => {
@@ -72,6 +79,7 @@ function askCli(prompt: string, model: string, system?: string): Promise<string>
     const child = spawn("pi", args, {
       stdio: ["ignore", "pipe", "pipe"],
       shell: process.platform === "win32",
+      cwd,
     });
     let out = "";
     let err = "";

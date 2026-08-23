@@ -10,7 +10,7 @@ set -uo pipefail
 cd "$(dirname "$0")"
 
 TARGET="${TARGET:-../lab2-agents-md/grades}"
-MODEL="${ZEN_MODEL:-mimo-v2.5-free}"
+MODEL="${ZEN_MODEL:-nemotron-3.5-lightning-free}"
 MAX_RETRY="${MAX_RETRY:-3}"
 TASK="${1:?用法：./loop.sh \"你要它做的事\"}"
 

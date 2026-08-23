@@ -20,7 +20,8 @@ cd grades && node report.ts
 
 ```bash
 cd grades
-pi --provider opencode --model mimo-v2.5-free -p "重構 calc.ts，讓它好讀一點"
+pi --provider opencode --model nemotron-3.5-lightning-free -a \
+   -p "重構 calc.ts 與 report.ts，讓它們好讀一點"
 git diff        # 或直接看檔案
 ```
 
@@ -45,7 +46,10 @@ node ../../lab4-loop/check.ts .
 
 填 `compliance-sheet.md`。
 
-> 起始違規數：R1=5　R2=1　R3=5　R4=8　R6=2
+> 起始違規數：R1=5　R2=1　R3=5　R4=7　R6=2（**兩個檔案加起來 20 個**）
+
+> ⚠️ **兩個檔案都要指定。** 只說「重構 calc.ts」的話，`report.ts` 不會被動到——
+> 檢查器掃的是整個目錄，你會以為它沒改好，其實是它照你說的做。
 
 ### 4. 抽成 skill（進階）
 

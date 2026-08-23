@@ -39,7 +39,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 ## ④ 確認它會回話
 
 ```bash
-pi --provider opencode --model mimo-v2.5-free -p "用繁體中文回我一句 hello"
+pi --provider opencode --model nemotron-3.5-lightning-free -p "用繁體中文回我一句 hello"
 ```
 
 ⚠️ **每次都要指定 `--model`**，不然它會用預設模型 —— 那可能是付費的。
@@ -51,7 +51,7 @@ pi --provider opencode --model mimo-v2.5-free -p "用繁體中文回我一句 he
 **提早裝完的人**：叫 pi 讀一份 CSV、輸出成 markdown 表格——那正好是等一下 1-C 的暖身。
 做完的話，去幫旁邊還在裝的人，那是最快的除錯方式。
 
-備用模型：`hy3-free`、`nemotron-3.5-lightning-free`。用 `--model` 換。
+備用模型：`hy3-free`、`mimo-v2.5-free`。用 `--model` 換。
 
 ## 卡住了怎麼辦
 
