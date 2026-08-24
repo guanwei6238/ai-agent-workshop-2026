@@ -9,14 +9,20 @@
 //
 //   cd workspace
 //   pi --provider opencode --model nemotron-3.5-lightning-free \
-//      -e ../club-tool.ts -a -p "E205 現在有人嗎？"
+//      -e ../club-tool.ts -a -p "我等一下想去社辦寫扣，E205 現在方便嗎？"
 
-// ── 社團內部資料。故意寫在這裡，不放成 .json ──────────────
+// ── 社團內部資料。故意寫在這裡，不放成 .json ──────────────────
 // 放成檔案的話 agent 會自己去讀，就試不出工具有沒有被呼叫了。
-const 社辦狀態: Record<string, { 人數: number; 鑰匙: string; 借到: string | null }> = {
-  E205: { 人數: 3, 鑰匙: "器材長", 借到: "21:00" },
-  E204: { 人數: 0, 鑰匙: "社長", 借到: null },
-  E301: { 人數: 1, 鑰匙: "活動長", 借到: "18:30" },
+type RoomStatus = {
+  occupied: number;      // 目前幾個人在裡面
+  keyHolder: string;     // 鑰匙在哪位幹部身上
+  bookedUntil: string | null;  // 借用到幾點，null = 沒人借
+};
+
+const ROOMS: Record<string, RoomStatus> = {
+  E205: { occupied: 3, keyHolder: "器材長", bookedUntil: "21:00" },
+  E204: { occupied: 0, keyHolder: "社長", bookedUntil: null },
+  E301: { occupied: 1, keyHolder: "活動長", bookedUntil: "18:30" },
 };
 
 export default function (pi: any) {
@@ -41,16 +47,22 @@ export default function (pi: any) {
       required: ["room"],
     },
 
-    async execute(_id: string, params: any) {
-      const 這間 = 社辦狀態[params.room];
-      const 回答 = !這間
-        ? `查無 ${params.room} 這間教室`
-        : 這間.借到
-          ? `${params.room}：目前 ${這間.人數} 人，鑰匙在${這間.鑰匙}身上，借用到 ${這間.借到}`
-          : `${params.room}：現在沒有人，鑰匙在${這間.鑰匙}身上`;
+    async execute(_id: string, params: { room: string }) {
+      const status = ROOMS[params.room];
+
+      let answer: string;
+      if (!status) {
+        answer = `查無 ${params.room} 這間教室`;
+      } else if (status.bookedUntil) {
+        answer =
+          `${params.room}：目前 ${status.occupied} 人，` +
+          `鑰匙在${status.keyHolder}身上，借用到 ${status.bookedUntil}`;
+      } else {
+        answer = `${params.room}：現在沒有人，鑰匙在${status.keyHolder}身上`;
+      }
 
       // 回傳格式固定，照抄就好
-      return { content: [{ type: "text", text: 回答 }], details: {} };
+      return { content: [{ type: "text", text: answer }], details: {} };
     },
   });
 }

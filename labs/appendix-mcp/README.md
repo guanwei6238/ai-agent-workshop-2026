@@ -15,7 +15,20 @@ pi 官方文件明文寫著：它**刻意不內建** MCP、subagent、permission
 **所以「這個功能怎麼用」永遠要看你手上是哪個工具。**
 這正是節 2 開場那句話——概念相同，實作各異。
 
-## 路線 A：裝現成的 MCP extension
+## 路線 A：自己寫一個真的 MCP server（推薦，而且不需要 pi）
+
+**[`python/`](python/) 有可以直接跑的完整範例**——一個 20 行的 Python MCP server，
+加一支 client 探測程式，把 `initialize` → `tools/list` → `tools/call` 每一步印出來。
+
+```bash
+cd python && python3 -m venv venv && ./venv/bin/pip install mcp
+./venv/bin/python probe.py
+```
+
+Python 的 SDK 是所有語言裡樣板最少的：**docstring 自動變成 description、
+type hint 自動變成 schema**。
+
+## 路線 B：裝現成的 MCP extension
 
 ```bash
 pi install npm:@spences10/pi-mcp
@@ -26,19 +39,20 @@ pi install npm:@spences10/pi-mcp
 
 接通之後驗證：讓 agent 讀到一個它原本讀不到的檔案，並貼出那次的輸出。
 
-## 路線 B：不碰 MCP，直接寫一個工具
+## 路線 C：不碰 MCP，直接寫一個工具
 
-> **課堂上的 Lab 3 就是這條路線**，而且已經有可跑的素材：`../lab3-tools/`。
-> 如果你還沒做完，先去做那個，再回來看路線 A。
+> **課堂上的 Lab 3 就是這條路線**，素材在 `../lab3-tools/`。
+> 還沒做完的話先去做那個，再回來看路線 A。
 
-## 兩者的差別
+## 三條路的差別
 
-| | 自己寫 tool | MCP |
-| --- | --- | --- |
-| 要跑額外的進程 | 不用 | 要 |
-| 跨工具通用 | 不行，綁 pi | **可以**，這是 MCP 的重點 |
-| 上手成本 | 低 | 中 |
-| 適合 | 只有你自己要用 | 要給別人／別的工具用 |
+| | A 寫 MCP server | B 裝現成 extension | C 寫 pi tool（Lab 3） |
+| --- | --- | --- | --- |
+| 需要 pi | **不需要** | 需要 | 需要 |
+| 要跑額外的進程 | 要 | 要 | 不用 |
+| 語言 | 任何 | — | 只能 TS/JS |
+| 跨工具通用 | **可以** | 可以 | 不行，綁 pi |
+| 已驗證可跑 | ✓ | 未測 | ✓ |
 
 MCP 的價值在「**標準**」——寫一次 server，所有支援 MCP 的工具都能接。
 如果你只是要給自己的 agent 加個能力，直接寫 tool 更快。
