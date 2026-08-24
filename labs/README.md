@@ -23,13 +23,15 @@ cd lab0-setup && ./check.sh
 | [lab0-setup](lab0-setup/) | 1 | 35 | 從零裝到跑通 | — |
 | [lab1-first-task](lab1-first-task/) | 1 | 60 | 用 agent 做一個真的功能 | pi |
 | [lab2-agents-md](lab2-agents-md/) | 2 | 60 | AGENTS.md + skill，量遵守率 | pi |
+| [lab3-tools](lab3-tools/) | 2 | ~20 | 給 agent 一個它本來沒有的工具 | pi |
 | [lab4-loop](lab4-loop/) | 2 | 30 | 做→檢查→餵回去→再做 | Lab 2 |
 | [lab5-rag](lab5-rag/) | 3 | 50 | 最小 RAG | pi |
 | [lab6-product](lab6-product/) | 3 | 49 | 把 LLM 放進產品 | pi |
 | [lab7-validation](lab7-validation/) | 4 | 60 | 輸出驗證器 | pi |
 | [appendix-mcp](appendix-mcp/) | — | — | MCP（課後自習） | pi |
 
-> Lab 3 不在課堂上。原因見 `appendix-mcp/README.md`。
+> Lab 3 教的是「自己寫一個工具」，那是 MCP 想解決的同一件事、但少一層 server。
+> **MCP 本身**（pi 核心刻意不內建）改成課後自習，見 `appendix-mcp/README.md`。
 
 ## 哪些能離線跑
 
@@ -37,7 +39,7 @@ cd lab0-setup && ./check.sh
 | --- | --- |
 | lab5 / lab7 | ✓ 完整支援 `mock` |
 | lab6 | △ 步驟 1–3 可以；**步驟 4（互相攻擊）需要真模型** |
-| lab1 / lab2 / lab4 | ✗ **需要 pi**，沒有 mock 路徑 |
+| lab1 / lab2 / lab3 / lab4 | ✗ **需要 pi**，沒有 mock 路徑 |
 
 支援的部分這樣跑：
 
@@ -66,5 +68,5 @@ Lab 6 步驟 2 會刻意讓你撞一次，那本身就是教材。
 
 ## 給講師
 
-`INSTRUCTOR.md` 在 lab5 與 lab7 裡，包含參考解答與實測數據。
+`INSTRUCTOR.md` 在 lab3、lab5、lab7 裡，包含參考解答與實測數據。
 發給學生前記得先確認要不要一起發。

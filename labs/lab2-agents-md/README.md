@@ -23,6 +23,24 @@ node report.ts | diff baseline.txt -      # 沒有輸出就是一模一樣
 先看一眼 `calc.ts`。它到處是 `any`、英文的廢話註解、`+` 串字串、
 散落的魔術數字、大駝峰的 `Load` 函式。**但它會動。**
 
+### 沒寫過 TypeScript？不影響
+
+**你不需要看懂這段程式在算什麼。** 六條規則裡有五條是「用眼睛找得到」的樣子：
+
+| 規則 | 違規長這樣 | 遵守長這樣 |
+| --- | --- | --- |
+| R1 不用 `any` | `function calc(d: any)` | `function calc(d: Course)` |
+| R2 匯出函式小駝峰 | `export function Load()` | `export function loadData()` |
+| R3 用 template literal | `"avg: " + s.avg` | `` `avg: ${s.avg}` `` |
+| R4 數字抽成常數 | `score = hw * 0.3` | `score = hw * W_HOMEWORK` |
+| R6 匯出函式有說明 | （上面一片空白） | `// 算出總分與等第` |
+
+而且 `check.ts` 會幫你數。**你要判斷的是「違規數有沒有變小」**，
+功能有沒有被改壞則交給 `diff baseline.txt`。兩件事都不用你讀懂邏輯。
+
+> R5「註解要說明為什麼」不在上表——那條**沒有任何程式擋得住**，只能人工看。
+> 這正是 Lab 4 要回答的問題。
+
 ## 步驟
 
 ### 1. 基準：不給規範
@@ -66,6 +84,15 @@ node ../../lab4-loop/check.ts .
 那種應該做成 skill。
 
 試著把「產生本專案格式的 commit message」寫成 skill，用 `/skill:` 呼叫。
+
+**檔案結構與範例在 [`skill-example/`](skill-example/)** —— 含 frontmatter 欄位說明，
+以及一份可以直接跑的 `commit-msg/SKILL.md`。
+
+```bash
+mkdir -p .pi/skills
+cp -r ../skill-example/commit-msg .pi/skills/
+pi                      # 進去之後打 /skill:commit-msg
+```
 
 > ⚠️ pi 的 skill 只有**描述**常駐 context，全文要靠模型自己去讀，
 > 而它常常不會這麼做。**用 `/skill:名字` 強制呼叫**，不要等它自己想到。

@@ -1,0 +1,86 @@
+# Skill 範例：本專案格式的 commit message
+
+Lab 2 步驟 4（進階）的範本。**照抄可以跑，但建議改成你自己專案的格式。**
+
+## 檔案結構
+
+一個 skill 就是**一個資料夾，裡面有一個 `SKILL.md`**。其他都是選配。
+
+```
+commit-msg/
+└── SKILL.md          ← 唯一必要的檔案
+```
+
+比較完整的長這樣：
+
+```
+my-skill/
+├── SKILL.md          ← 必要：frontmatter + 說明
+├── scripts/          ← 選配：它可以去跑的腳本
+│   └── process.sh
+├── references/       ← 選配：需要時才讀的細節文件
+│   └── api.md
+└── assets/           ← 選配：樣板、範例檔
+    └── template.json
+```
+
+`SKILL.md` 裡用**相對路徑**指到這些檔案，例如 `見 references/api.md`。
+
+## `SKILL.md` 的 frontmatter
+
+開頭那兩行 `---` 中間的部分。**只有兩個欄位是必填的**：
+
+| 欄位 | 必填 | 說明 |
+| --- | --- | --- |
+| `name` | ✓ | 最多 64 字。**只能用小寫英文、數字、連字號**。`pdf-tools` 可以，`PDF_Tools` 不行 |
+| `description` | ✓ | 最多 1024 字。**寫清楚「做什麼」和「什麼時候用」** |
+| `license` | | 授權 |
+| `compatibility` | | 環境需求 |
+| `disable-model-invocation` | | 設 `true` 就只能用 `/skill:` 手動叫，模型不會自己想到 |
+
+> **缺 `description` 的 skill 不會被載入**，這是唯一會直接失敗的錯誤。
+> 其他違規（名字太長、有大寫）只會警告，還是會載入。
+
+## `description` 為什麼是關鍵
+
+平常常駐在 context 裡的**只有 `name` 和 `description`**，全文要模型自己決定去讀。
+所以 description 就是它判斷「這件事該不該用這個 skill」的唯一依據。
+
+```yaml
+# 好
+description: 從 PDF 抽出文字與表格、填 PDF 表單、合併多個 PDF。處理 PDF 文件時使用。
+
+# 不好
+description: 處理 PDF。
+```
+
+> 這件事跟 **Lab 3 的工具 description** 是同一個道理，也是同一個坑：
+> 寫得模糊，它就不會用；而且**不會有任何錯誤訊息告訴你**。
+
+## 放在哪裡
+
+| 位置 | 範圍 |
+| --- | --- |
+| `~/.pi/agent/skills/` | 全域，所有專案 |
+| `.pi/skills/` | 這個專案（**專案要先 `/trust`**） |
+| `.agents/skills/` | 這個專案，跨工具通用的位置 |
+| `--skill <path>` | 指定單一路徑，可重複 |
+
+```bash
+mkdir -p .pi/skills
+cp -r ../skill-example/commit-msg .pi/skills/
+```
+
+## 怎麼呼叫
+
+```
+/skill:commit-msg
+/skill:commit-msg 只看 calc.ts 的改動      ← 參數會接在 skill 內容後面
+```
+
+> ⚠️ pi 官方文件寫明「models don't always do this」——
+> 它**不一定**會自己想到要讀 skill 全文。
+> Lab 2 的驗收因此定為：**用 `/skill:` 明確呼叫並成功**。
+>
+> 另外 `pi -p` 非互動模式預設會忽略專案內的 skill，
+> 先在互動模式跑一次 `/trust`，或加 `-a`。
