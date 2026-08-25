@@ -41,10 +41,26 @@ my-skill/
 > **缺 `description` 的 skill 不會被載入**，這是唯一會直接失敗的錯誤。
 > 其他違規（名字太長、有大寫）只會警告，還是會載入。
 
+## 這整套機制叫「漸進式揭露」
+
+pi 官方文件用的詞是 **progressive disclosure**，運作分三步：
+
+```
+啟動時                 模型自己判斷            要用才讀
+掃過所有 skill    →    「這件事該不該用   →   用讀檔工具把
+只把 name +            這個 skill？」          SKILL.md 全文
+description 放                                 拉進來
+進 context
+```
+
+**一百個 skill 的常駐成本，等於一百行描述——不是一百份文件。**
+這就是它能一直長大而不吃掉 context 的原因。
+
+代價在第二步：**判斷是模型做的，而它不一定會讀。**
+
 ## `description` 為什麼是關鍵
 
-平常常駐在 context 裡的**只有 `name` 和 `description`**，全文要模型自己決定去讀。
-所以 description 就是它判斷「這件事該不該用這個 skill」的唯一依據。
+因為常駐的只有它。它就是模型判斷「這件事該不該用這個 skill」的唯一依據。
 
 ```yaml
 # 好
