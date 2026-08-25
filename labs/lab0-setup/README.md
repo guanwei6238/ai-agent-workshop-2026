@@ -73,7 +73,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free -p "用繁體中文�
 | 找不到 `pi` 指令 | 重開終端機；確認安裝路徑有進 `PATH` |
 | `No models available` | `/login` 還沒做完，或選錯 provider |
 | 401 / 403 | key 貼錯或多了空白，重跑一次 `/login` |
-| 429 / rate limit | 額度用完了，**舉手跟講師換備用 key**，不要乾等 |
+| 429 / rate limit | 這把 key 的額度用完了。**先往下做**，Lab 5 / 6 / 7 都有 `--backend mock` 可以離線完成 |
 | 模型回 502 / unavailable | 那個模型當下掛了，`--model` 換一個 |
 | skill 寫好了卻沒作用 | 專案信任沒開。用 `-a`，或先跑一次互動模式 `/trust` |
 | 回覆是亂碼或空白 | 換模型。免費模型的常態，不是你的錯 |

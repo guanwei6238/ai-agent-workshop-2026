@@ -58,7 +58,7 @@ if (passA && passB) {
     no("呼叫失敗");
     r.out.split("\n").slice(0, 3).forEach((l) => console.log("      " + l));
     tip("No models available → pi 裡面還沒 /login");
-    tip("429 → 額度用完，舉手換 key");
+    tip("429 → 這把 key 的額度用完了，等一下再試，或先往下做 mock 的部分");
     tip("502/unavailable → 換模型再試：ZEN_MODEL=hy3-free node check.ts");
     passB = false;
   }
