@@ -13,7 +13,7 @@ lab3-tools/
 ├── club-tool.ts        ← 你要填的（4 個 TODO）
 ├── solution/           ← 參考解，卡住再看
 ├── workspace/          ← ★ 一定要在這裡面跑 pi ★
-└── verify.sh
+└── verify.ts
 ```
 
 > **為什麼要在 `workspace/` 裡跑？**
@@ -67,7 +67,7 @@ parameters: { room: { type: "string", description: "參數" } },
 改完再跑一次**同一句話**：
 
 ```bash
-./verify.sh
+node verify.ts
 ```
 
 通過的話會長這樣：

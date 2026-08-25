@@ -6,6 +6,10 @@
 node --version      # 需要 22 以上
 ```
 
+**所有腳本都是 `.ts`，用 `node xxx.ts` 跑。**
+教室是 Windows 11，學生在 PowerShell 裡打指令 —— `.sh` 在那裡不會動，
+而 `node` 在三個平台上行為一模一樣。跨平台的小工具收在 `shared/sh.ts`。
+
 ## 開始之前
 
 先照 [lab0-setup](lab0-setup/) 裝好 pi 並 `/login` 登入一次。
@@ -13,7 +17,7 @@ node --version      # 需要 22 以上
 
 ```bash
 export ZEN_MODEL=nemotron-3.5-lightning-free   # 選用。備援：hy3-free / mimo-v2.5-free
-cd lab0-setup && ./check.sh
+cd lab0-setup && node check.ts
 ```
 
 ## 一覽

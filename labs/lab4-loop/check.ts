@@ -16,10 +16,14 @@ const dir = process.argv[2] ?? "../lab2-agents-md/grades";
 
 interface Violation { rule: string; file: string; line: number; text: string; why: string }
 
+// lab 的腳手架不算學生的產出，不掃。
+// 少了這行，init.ts 自己會被算成違規，起始基準就對不上了。
+const SCAFFOLD = new Set(["init.ts", "restore.ts"]);
+
 const files: string[] = [];
 (function walk(d: string) {
   for (const e of readdirSync(d)) {
-    if (e === "node_modules" || e.startsWith(".")) continue;
+    if (e === "node_modules" || e.startsWith(".") || SCAFFOLD.has(e)) continue;
     const p = join(d, e);
     if (statSync(p).isDirectory()) walk(p);
     else if (p.endsWith(".ts")) files.push(p);

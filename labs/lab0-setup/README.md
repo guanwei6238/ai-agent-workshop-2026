@@ -56,7 +56,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free -p "用繁體中文�
 
 **驗收**：終端機看得到模型的回覆。
 
-`./check.sh` 會把上面四步一次檢查完。
+`node check.ts` 會把上面四步一次檢查完。
 
 **提早裝完的人**：叫 pi 讀一份 CSV、輸出成 markdown 表格——那正好是等一下 1-C 的暖身。
 做完的話，去幫旁邊還在裝的人，那是最快的除錯方式。

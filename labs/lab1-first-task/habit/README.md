@@ -9,7 +9,7 @@ node src/cli.ts done 早起 2026-08-20
 node src/cli.ts list            # 列出所有習慣
 ```
 
-資料存在 `habits.json`。**`./restore.sh` 一次還原程式碼與資料**——
+資料存在 `habits.json`。**`node restore.ts` 一次還原程式碼與資料**——
 它會 `git clean -fd`，把 agent 新增的檔案（例如 `src/commands/streak.ts`）也刪掉。
 只用 `git checkout .` 刪不掉那些新檔，第二次就比不出差別。
 

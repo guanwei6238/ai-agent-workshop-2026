@@ -9,11 +9,11 @@
 
 ```bash
 cd grades
-bash init.sh          # git repo + 存一份重構前的報表當基準
+node init.ts          # git repo + 存一份重構前的報表當基準
 node report.ts
 ```
 
-`init.sh` 會把重構前的輸出存成 `baseline.txt`。
+`init.ts` 會把重構前的輸出存成 `baseline.txt`。
 每次重構完都要比對，確認**功能沒被改壞**：
 
 ```bash
@@ -57,7 +57,7 @@ git diff        # 或直接看檔案
 ### 2. 加約束
 
 ```bash
-./restore.sh                       # 還原程式碼（連 agent 新增的檔一起清）
+node restore.ts                       # 還原程式碼（連 agent 新增的檔一起清）
 cp ../AGENTS.example.md AGENTS.md
 ```
 

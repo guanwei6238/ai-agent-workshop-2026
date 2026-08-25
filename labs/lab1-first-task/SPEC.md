@@ -43,7 +43,7 @@ node src/cli.ts streak
 
 ## 種子資料長怎樣
 
-`bash init.sh`（或之後的 `./restore.sh`）會產生固定的資料（日期相對於今天）：
+`node init.ts`（或之後的 `node restore.ts`）會產生固定的資料（日期相對於今天）：
 
 | 習慣 | 有紀錄的日子 | 預期連續天數 |
 | --- | --- | --- |

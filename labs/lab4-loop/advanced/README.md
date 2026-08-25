@@ -1,6 +1,6 @@
 # 進階：把迴路做成 pi extension
 
-`loop.sh` 是外部迴路——它在 agent **跑完之後**才檢查。
+`loop.ts` 是外部迴路——它在 agent **跑完之後**才檢查。
 真正的 hook 應該在 agent **每次寫檔的當下**就攔截。
 
 pi 沒有**設定檔式**的 hook（官方明文的設計取捨：核心保持極小），
@@ -27,14 +27,14 @@ tool_result 事件
 
 差別在哪：
 
-| | `loop.sh`（外部迴路） | extension（內部 hook） |
+| | `loop.ts`（外部迴路） | extension（內部 hook） |
 | --- | --- | --- |
 | 何時檢查 | agent 整輪跑完後 | 每次寫檔當下 |
 | 模型知不知道 | 要重新開一輪告訴它 | 同一輪內就看到 |
 | 花的 token | 多（要重述 context） | 少 |
 | 實作成本 | 30 行 shell | 要寫 TS、要懂 pi 的事件模型 |
 
-課堂上用 shell 版，是因為**機制透明**——你看得到「錯誤訊息被字串接回去」
+課堂上用 `loop.ts` 那個笨版本，是因為**機制透明**——你看得到「錯誤訊息被字串接回去」
 這件事實際發生。看懂之後再寫 extension 就很簡單。
 
 參考：pi 的 `docs/extensions.md`，以及生態系裡的 `pi-yaml-hooks`。

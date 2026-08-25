@@ -10,7 +10,7 @@
 
 ```bash
 cd habit
-bash init.sh          # 變成 git repo + 產生種子資料
+node init.ts          # 變成 git repo + 產生種子資料
 node src/cli.ts list
 ```
 
@@ -19,7 +19,7 @@ node src/cli.ts list
 **[`SPEC.md`](SPEC.md) 是你要 agent 做出來的東西。先讀完再開始。**
 
 裡面寫清楚了功能、使用方法、邊界、以及「不要做的事」。
-`verify.sh` 會照這份規格逐項檢查。
+`verify.ts` 會照這份規格逐項檢查。
 
 ## 步驟
 
@@ -49,7 +49,7 @@ git diff
 ### 4. 跑檢核
 
 ```bash
-cd .. && ./verify.sh
+cd .. && node verify.ts
 ```
 
 把結果填進 [`checklist.md`](checklist.md) 的第一欄。
@@ -58,13 +58,13 @@ cd .. && ./verify.sh
 
 ```bash
 cd habit
-./restore.sh                  # 程式碼 + 資料一起還原
+node restore.ts                  # 程式碼 + 資料一起還原
 ```
 
 **看第 1 次哪幾項沒過，那些就是你要補進 prompt 的東西。**
 `SPEC.md` 已經寫得很清楚了，你的任務是**把它變成一段 prompt**。
 
-再跑一次 `./verify.sh`，填第二欄。
+再跑一次 `node verify.ts`，填第二欄。
 
 ## 驗收
 
@@ -92,7 +92,7 @@ cd habit
 | 檔案 | 用途 |
 | --- | --- |
 | `SPEC.md` | 規格書，**先讀這個** |
-| `verify.sh` | 照規格逐項檢查 |
+| `verify.ts` | 照規格逐項檢查 |
 | `checklist.md` | 檢核表，填兩次的結果 |
-| `check-imports.ts` | 找沒用到的 import（`verify.sh` 會呼叫） |
+| `check-imports.ts` | 找沒用到的 import（`verify.ts` 會呼叫） |
 | `habit/` | 素材專案 |
