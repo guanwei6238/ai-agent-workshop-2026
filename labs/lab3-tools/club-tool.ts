@@ -8,8 +8,8 @@
 // 怎麼跑（★ 一定要在 workspace/ 裡面跑 ★）：
 //
 //   cd workspace
-//   pi -a -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free \
-//      "我等一下想去社辦寫扣，E205 現在方便嗎？"
+//   pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
+//   然後輸入：我等一下想去社辦寫扣，E205 現在方便嗎？
 
 // ── 社團內部資料。故意寫在這裡，不放成 .json ──────────────────
 // 放成檔案的話 agent 會自己去讀，就試不出工具有沒有被呼叫了。

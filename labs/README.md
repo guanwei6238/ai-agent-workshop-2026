@@ -8,13 +8,17 @@ node --version      # 需要 22 以上
 
 ## 兩條總則
 
-**一、學生一律用互動模式，不要 `pi -p`。**
+**一、學生一律「開 pi，然後打字」，不要 `pi -p`。**
 `-p` 跑完就結束，看不到它呼叫了哪些工具、讀了哪些檔——
-而那正是這門課要學生看的東西。要帶初始提示就直接接在後面（**不加 `-p`**）：
+而那正是這門課要學生看的東西。
 
 ```bash
-pi -a --provider opencode --model nemotron-3.5-lightning-free "你的指令"
+pi --provider opencode --model nemotron-3.5-lightning-free
 ```
+
+開起來之後才輸入 prompt。**不需要 `-a`** —— `AGENTS.md` 與 `CLAUDE.md`
+在信任判斷之前就會載入（pi 官方 `usage.md` 寫明，已實測）。
+只有 `.pi/skills/` 這類專案內資源才需要信任，互動模式會直接問你。
 
 `lab3/verify.ts`、`lab4/loop.ts`、`lab7/run.ts` 這些**腳本**內部用 `-p` 是對的——
 那是自動化，不是學生在操作。

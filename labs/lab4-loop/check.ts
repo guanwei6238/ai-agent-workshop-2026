@@ -34,8 +34,48 @@ const v: Violation[] = [];
 const add = (rule: string, file: string, line: number, text: string, why: string) =>
   v.push({ rule, file, line, text: text.trim().slice(0, 70), why });
 
+/**
+ * 把註解拿掉，只留真正的程式碼。
+ *
+ * 沒有這個的話，agent 寫「原本是 0.3，已改成具名常數」這種註解，
+ * 會被 R4 算成一次違規——遵守率的數字就虛胖了。
+ * 跨行的區塊註解也要處理，所以狀態得帶著走。
+ */
+function stripComments(lines: string[]): string[] {
+  const out: string[] = [];
+  let inBlock = false;
+
+  for (const ln of lines) {
+    let res = "";
+    let quote: string | null = null;   // 現在在哪一種字串裡
+
+    for (let i = 0; i < ln.length; i++) {
+      const c = ln[i];
+      const next = ln[i + 1];
+
+      if (inBlock) {
+        if (c === "*" && next === "/") { inBlock = false; i++; }
+        continue;
+      }
+      if (quote) {
+        res += c;
+        if (c === "\\") { res += next ?? ""; i++; }
+        else if (c === quote) quote = null;
+        continue;
+      }
+      if (c === '"' || c === "'" || c === "`") { quote = c; res += c; continue; }
+      if (c === "/" && next === "/") break;               // 行註解，整行剩下的都不要
+      if (c === "/" && next === "*") { inBlock = true; i++; continue; }
+      res += c;
+    }
+    out.push(res);
+  }
+  return out;
+}
+
 for (const f of files) {
   const lines = readFileSync(f, "utf8").split("\n");
+  const codeLines = stripComments(lines);
 
   // 追蹤「現在是不是在一個具名常數的區塊裡」。
   // 沒有這個的話，把權重抽成 const WEIGHTS = { hw: 0.3, ... } 之後，
@@ -44,7 +84,7 @@ for (const f of files) {
 
   lines.forEach((ln, i) => {
     const n = i + 1;
-    const code = ln.replace(/\/\/.*$/, "");
+    const code = codeLines[i];
 
     const opensConst = /^\s*(export\s+)?const\s+[A-Z][A-Z_0-9]*\s*[:=]/.test(code);
     if (opensConst) constDepth = 0;
@@ -56,7 +96,7 @@ for (const f of files) {
     }
 
     // R1 禁止 any
-    if (/\bany\b/.test(code) && !/^\s*\*/.test(ln))
+    if (/\bany\b/.test(code))
       add("R1", f, n, ln, "用了 any。請寫出真正的型別。");
 
     // R2 匯出的函式要小駝峰、動詞開頭

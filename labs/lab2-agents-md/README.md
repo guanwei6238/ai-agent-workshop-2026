@@ -47,15 +47,21 @@ node check-output.ts        # ✓ 就是功能沒被改壞
 
 ```bash
 cd grades
-pi -a --provider opencode --model nemotron-3.5-lightning-free \
-   "重構 calc.ts 與 report.ts，讓它們好讀一點"
+pi --provider opencode --model nemotron-3.5-lightning-free
 ```
 
-> 最後那串字**不加 `-p`**，所以它會開互動模式並且把那句話當第一個提示。
-> 你會**看到它讀了哪些檔、改了哪些行**——那是這個 lab 的重點之一。
-> 做完打 `/exit` 離開。
+開起來之後，**在 pi 裡面輸入這一句**：
 
-改完之後**在 VS Code 的原始檔控制面板看 diff**（`Ctrl+Shift+G`，點檔案看左右並排），
+```
+重構 calc.ts 與 report.ts，讓它們好讀一點
+```
+
+> **這句話等一下要一模一樣再用兩次**，所以直接複製，不要自己重打。
+>
+> 用互動模式（不是 `pi -p`），因為你要**看到它讀了哪些檔、改了哪些行**——
+> 那是這個 lab 的重點之一。做完打 `/exit` 離開。
+
+改完之後**在 VS Code 的原始檔控制看它改了什麼**（`Ctrl+Shift+G`，點檔案看左右並排），
 不要在終端機讀。
 
 **記錄它自作主張了什麼。** 它改的方向是它自己的品味，不是你的。
@@ -63,16 +69,22 @@ pi -a --provider opencode --model nemotron-3.5-lightning-free \
 ### 2. 加約束
 
 ```bash
-node restore.ts                       # 還原程式碼（連 agent 新增的檔一起清）
+node restore.ts                       # 還原程式碼
 cp ../AGENTS.example.md AGENTS.md
 ```
 
-然後用**完全相同的指令**再跑一次：
+然後**開 pi，輸入完全相同的那一句**：
 
 ```bash
-pi -a --provider opencode --model nemotron-3.5-lightning-free \
-   "重構 calc.ts 與 report.ts，讓它們好讀一點"
+pi --provider opencode --model nemotron-3.5-lightning-free
 ```
+
+```
+重構 calc.ts 與 report.ts，讓它們好讀一點
+```
+
+> 一個字都不要改。**這一次唯一的變數是 `AGENTS.md` 的存在**，
+> 指令變了就比不出是誰的功勞。
 
 比較兩次的結果 —— 一樣在 VS Code 的原始檔控制看，
 或直接開 `calc.ts` 對照你第 1 次記下來的東西。
@@ -81,13 +93,11 @@ pi -a --provider opencode --model nemotron-3.5-lightning-free \
 
 同一份 `AGENTS.md`、同一句指令，**連跑三次**。每一次都是：
 
-```bash
-node restore.ts                                    # 1. 還原
-pi -a --provider opencode --model nemotron-3.5-lightning-free \
-   "重構 calc.ts 與 report.ts，讓它們好讀一點"       # 2. 跑（互動模式，看它做）
-node ../../lab4-loop/check.ts .                    # 3. 數違規
-node check-output.ts                               # 4. 確認功能沒壞
-```
+1. `node restore.ts` —— 還原
+2. 開 `pi --provider opencode --model nemotron-3.5-lightning-free`，
+   輸入**同一句話**，做完 `/exit`
+3. `node ../../lab4-loop/check.ts .` —— 數違規
+4. `node check-output.ts` —— 確認功能沒壞
 
 填 `compliance-sheet.md`。
 
@@ -109,14 +119,17 @@ node check-output.ts                               # 4. 確認功能沒壞
 ```bash
 mkdir -p .pi/skills
 cp -r ../skill-example/commit-msg .pi/skills/
-pi                      # 進去之後打 /skill:commit-msg
+pi --provider opencode --model nemotron-3.5-lightning-free
 ```
 
+進去之後打 `/skill:commit-msg`。
+
+> ⚠️ **這一步 pi 會問你要不要信任這個資料夾——要說「是」。**
+> `.pi/skills/` 是專案內資源，不信任的話 skill 不會被載入。
+> （`AGENTS.md` 不受影響，它在信任判斷之前就載入了。）
+>
 > ⚠️ pi 的 skill 只有**描述**常駐 context，全文要靠模型自己去讀，
 > 而它常常不會這麼做。**用 `/skill:名字` 強制呼叫**，不要等它自己想到。
->
-> 另外：`pi -p` 非互動模式預設會忽略專案內的 skill。
-> 先跑一次互動模式 `/trust`，或加 `-a`。
 
 ## 驗收
 

@@ -27,21 +27,31 @@ lab3-tools/
 
 ```bash
 cd workspace
-pi -a --provider opencode --model nemotron-3.5-lightning-free \
-   "我等一下想去社辦寫扣，E205 現在方便嗎？"
+pi --provider opencode --model nemotron-3.5-lightning-free
+```
+
+輸入：
+
+```
+我等一下想去社辦寫扣，E205 現在方便嗎？
 ```
 
 它會反問你 E205 是什麼。**把回答記下來**，然後 `/exit`。
 
-> 不加 `-p`，所以是互動模式——**你看得到它有沒有去呼叫工具**，那正是這個 lab 要觀察的。
+> 用互動模式（不是 `pi -p`），因為**你要看的就是「它有沒有去呼叫工具」**。
 
 ### 2. 載入工具——但它還是不會用
 
 `club-tool.ts` 已經是可以跑的了，先原封不動載進去：
 
 ```bash
-pi -a -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free \
-   "我等一下想去社辦寫扣，E205 現在方便嗎？"
+pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
+```
+
+**輸入同一句話**：
+
+```
+我等一下想去社辦寫扣，E205 現在方便嗎？
 ```
 
 **工具就在那裡，但它多半還是答不出來。**
