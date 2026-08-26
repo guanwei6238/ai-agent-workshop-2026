@@ -10,7 +10,7 @@
 
 ```
 lab3-tools/
-├── club-tool.ts        ← 你要填的（4 個 TODO）
+├── club-tool.ts        ← 你要改的（3 個 TODO，都在上半部）
 ├── solution/           ← 參考解，卡住再看
 ├── workspace/          ← ★ 一定要在這裡面跑 pi ★
 └── verify.ts
@@ -33,12 +33,10 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 輸入：
 
 ```
-我等一下想去社辦寫扣，E205 現在方便嗎？
+我等一下想去社辦寫 code，E205 現在方便嗎？
 ```
 
-它會反問你 E205 是什麼。**把回答記下來**，然後 `/exit`。
-
-> 用互動模式（不是 `pi -p`），因為**你要看的就是「它有沒有去呼叫工具」**。
+它會反問你 E205 是什麼。**把回答記下來**，然後 `/quit`。
 
 ### 2. 載入工具——但它還是不會用
 
@@ -51,7 +49,7 @@ pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
 **輸入同一句話**：
 
 ```
-我等一下想去社辦寫扣，E205 現在方便嗎？
+我等一下想去社辦寫 code，E205 現在方便嗎？
 ```
 
 **工具就在那裡，但它多半還是答不出來。**

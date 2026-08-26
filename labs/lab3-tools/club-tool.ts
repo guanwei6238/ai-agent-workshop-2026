@@ -51,8 +51,11 @@ export default function (pi: any) {
       required: ["room"],
     },
 
-    // ── TODO 4 ──────────────────────────────────────────────
+    // ── 這裡不用改，但值得花 30 秒讀一下 ──────────────────
     // 真正去做事的地方。params.room 是模型傳進來的值。
+    //
+    // 注意：這段程式碼跟「模型會不會呼叫這個工具」完全無關。
+    // 決定它會不會被呼叫的，是上面那三個 TODO —— 全部都是「字」。
     async execute(_id: string, params: { room: string }) {
       const status = ROOMS[params.room];
 
