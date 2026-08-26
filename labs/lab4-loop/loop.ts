@@ -1,14 +1,37 @@
-// Lab 4：最小可行的 loop engineering。
+// ════════════════════════════════════════════════════════════════
+// Lab 4：一個最小可行的 loop engineering
 //
 //   node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"
 //
-// 做 → 檢查 → 把錯誤餵回去 → 再做。就這樣，沒有魔法。
+// 這支程式取代的，就是「坐在電腦前一直按 enter 的那個人」。
+// 它做的事只有四步，沒有任何魔法：
+//
+//     ┌─────────────────────────────────────────────┐
+//     │  1. 叫 agent 做事                            │
+//     │  2. 用程式檢查它做出來的東西                  │
+//     │  3. 過了 → 停。沒過 → 把「具體的錯誤」餵回去  │
+//     │  4. 回到第 1 步（最多 MAX_RETRY 次）          │
+//     └─────────────────────────────────────────────┘
+//
+// 對照節 2 講的「迴路的三個零件」：
+//     工作從哪來    → 就這一個重構任務（命令列參數 TASK）
+//     每一輪做什麼  → 改 → 跑 check.ts → 把違規清單餵回去
+//     什麼時候停    → check.ts 回傳 0（全過），或重試滿 MAX_RETRY 次
+//
+// 三個零件裡最容易被忽略的是最後一個。少了明確的停止條件，
+// 迴路要嘛永遠不停，要嘛停在你沒預期的地方。
+// ════════════════════════════════════════════════════════════════
+
 import { join } from "node:path";
-import { run, runLive, dirOf } from "../shared/sh.ts";
+import { run, runWithHeartbeat, dirOf } from "../shared/sh.ts";
 
 const HERE = dirOf(import.meta.url);
+
+// 要被重構的專案。預設是 Lab 2 那個成績計算工具。
 const TARGET = process.env.TARGET ?? join(HERE, "..", "lab2-agents-md", "grades");
 const MODEL = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
+
+// 停止條件的另一半：就算一直沒過，也不能無限跑下去。
 const MAX_RETRY = Number(process.env.MAX_RETRY ?? 3);
 
 const TASK = process.argv[2];
@@ -17,40 +40,76 @@ if (!TASK) {
   process.exit(2);
 }
 
-// 用 runLive，這樣學生看得到 agent 正在做什麼
-const runAgent = (prompt: string, cont = false) =>
-  runLive("pi", [
-    "--provider", "opencode", "--model", MODEL,
-    ...(cont ? ["-c"] : []), "-p", prompt,
-  ], { cwd: TARGET });
+/**
+ * 叫 agent 做一件事。
+ *
+ * 這裡用 `-p`（非互動模式）是刻意的 —— 迴路要能自己跑完，
+ * 中間不能停下來等人按 enter。那正是這個 lab 的重點。
+ *
+ * `continueSession = true` 會加上 `-c`，接續上一次的對話。
+ * 這很重要：agent 因此記得自己剛剛改了什麼，
+ * 你只要跟它說「這幾條沒過」，不用把整個任務重講一遍。
+ */
+const runAgent = (prompt: string, continueSession = false) =>
+  runWithHeartbeat(
+    "pi",
+    [
+      "--provider", "opencode", "--model", MODEL,
+      ...(continueSession ? ["-c"] : []),
+      "-p", prompt,
+    ],
+    { cwd: TARGET, label: "agent 工作中" },
+  );
 
+console.log(`\n目標：${TARGET}`);
+console.log(`模型：${MODEL}　最多重試：${MAX_RETRY} 次`);
+console.log(`\n⚠️  pi 在做完之前不會有任何輸出，一輪大約 30～120 秒。`);
+console.log(`   看到 ⏳ 在跳就代表還活著，不要按 Ctrl+C。\n`);
+
+// ── 第 1 步：先讓它做一次 ────────────────────────────────────
 console.log("── 第 1 次：照你說的做 ──");
-if (runAgent(TASK) !== 0) {
-  console.error("agent 執行失敗");
+const first = await runAgent(TASK);
+if (first.code !== 0) {
+  console.error("agent 執行失敗：\n" + first.out);
   process.exit(1);
 }
 
-for (let i = 1; i <= MAX_RETRY; i++) {
-  console.log(`\n── 檢查（第 ${i} 輪）──`);
+// ── 第 2～4 步：檢查 → 餵回去 → 再做 ─────────────────────────
+for (let round = 1; round <= MAX_RETRY; round++) {
+  console.log(`\n── 檢查（第 ${round} 輪）──`);
+
+  // 這一行就是整個迴路的「回饋訊號」。
+  // 訊號的品質決定迴路的品質 —— check.ts 講得越具體，agent 越修得動。
   const check = run("node", [join(HERE, "check.ts"), TARGET]);
   console.log(check.out);
 
+  // ── 停止條件一：通過了 ──
   if (check.code === 0) {
-    console.log(`\n✓ 迴路結束：第 ${i} 輪通過。`);
+    console.log(`\n✓ 迴路結束：第 ${round} 輪通過。`);
     process.exit(0);
   }
 
-  if (i === MAX_RETRY) {
-    console.log(`\n! 試了 ${MAX_RETRY} 次還是沒過。這也是一種結果——把它記下來。`);
+  // ── 停止條件二：試夠了 ──
+  if (round === MAX_RETRY) {
+    console.log(`\n! 試了 ${MAX_RETRY} 次還是沒過。這也是一種結果 —— 把它記下來。`);
+    console.log(`  沒過的那幾條，去看看是不是「程式檢查不到」的那一類。`);
     process.exit(1);
   }
 
-  console.log(`\n── 把錯誤餵回去（第 ${i + 1} 次）──`);
-  // 關鍵在這裡：餵回去的必須是「具體的」錯誤，不是「格式錯誤」四個字。
-  const fed = `剛才的修改沒有通過專案的規範檢查，違規如下：
+  // ── 把錯誤餵回去 ──
+  // 關鍵在「具體」。餵「格式錯誤」沒有用；
+  // 餵「calc.ts:15 用了 any」它才知道要改哪一行。
+  // 這跟節 4 的重試迴路是完全一樣的機制，只是換了個場景。
+  console.log(`\n── 把錯誤餵回去，讓它再做一次（第 ${round + 1} 次）──`);
+  const feedback = `剛才的修改沒有通過專案的規範檢查，違規如下：
 
 ${check.out}
 
 請依照 AGENTS.md 修好這些問題。只改必要的地方。`;
-  if (runAgent(fed, true) !== 0) process.exit(1);
+
+  const again = await runAgent(feedback, true);
+  if (again.code !== 0) {
+    console.error("agent 執行失敗：\n" + again.out);
+    process.exit(1);
+  }
 }

@@ -69,6 +69,59 @@ export function runLive(
   return r.status ?? 1;
 }
 
+/**
+ * 跑一個指令，而且在等待的時候印出「還活著」的心跳。
+ *
+ * 為什麼需要這個：`pi -p` 在做完之前**一個字都不會輸出**（實測跑 100 秒
+ * 完全空白）。學生會以為當掉了，然後按 Ctrl+C。所以我們自己每隔幾秒
+ * 印一次經過的秒數。
+ */
+export async function runWithHeartbeat(
+  cmd: string,
+  args: string[],
+  opts: { cwd?: string; label?: string } = {},
+): Promise<RunResult> {
+  const { spawn } = await import("node:child_process");
+  const label = opts.label ?? "工作中";
+  const started = Date.now();
+
+  const tick = setInterval(() => {
+    const s = Math.round((Date.now() - started) / 1000);
+    process.stdout.write(`\r  ${C.dim}⏳ ${label}… ${s} 秒${C.reset}   `);
+  }, 2000);
+
+  return new Promise<RunResult>((resolve) => {
+    const child = spawn(cmd, args, {
+      cwd: opts.cwd,
+      stdio: ["ignore", "pipe", "pipe"],
+      shell: WIN,
+      windowsHide: true,
+    });
+
+    let out = "";
+    const collect = (d: Buffer) => {
+      out += d.toString();
+      // 真的有輸出的時候，先把心跳那一行擦掉再印
+      process.stdout.write(`\r${" ".repeat(40)}\r`);
+      process.stdout.write(d);
+    };
+    child.stdout.on("data", collect);
+    child.stderr.on("data", collect);
+
+    child.on("close", (code) => {
+      clearInterval(tick);
+      process.stdout.write(`\r${" ".repeat(40)}\r`);
+      const s = Math.round((Date.now() - started) / 1000);
+      console.log(`  ${C.dim}（花了 ${s} 秒）${C.reset}`);
+      resolve({ code: code ?? 1, out: out.trim() });
+    });
+    child.on("error", () => {
+      clearInterval(tick);
+      resolve({ code: 127, out: `找不到指令：${cmd}` });
+    });
+  });
+}
+
 /** 這個檔案（相對於呼叫它的腳本）所在的目錄。 */
 export function dirOf(importMetaUrl: string): string {
   return new URL(".", importMetaUrl).pathname.replace(/^\/([A-Za-z]:)/, "$1");

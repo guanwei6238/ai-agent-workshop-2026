@@ -13,7 +13,7 @@ const ext = process.argv[2] === "solution"
   ? join("..", "solution", "club-tool.ts")
   : join("..", "club-tool.ts");
 
-const Q = "我等一下想去社辦寫扣，E205 現在方便嗎？";
+const Q = "我等一下想去社辦寫 code，E205 現在方便嗎？";
 const TRIES = Number(process.env.TRIES ?? 3);
 
 console.log(`  問題：${Q}`);

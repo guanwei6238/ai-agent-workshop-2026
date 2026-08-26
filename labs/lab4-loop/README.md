@@ -14,7 +14,9 @@
 
 ```bash
 ls ../lab2-agents-md/grades/AGENTS.md          # 應該存在（Lab 2 步驟 2 產生）
-cd ../lab2-agents-md/grades && node restore.ts    # 還原到乾淨狀態
+cd ../lab2-agents-md/grades
+node restore.ts    # 還原到乾淨狀態
+
 cd ../../lab4-loop
 node check.ts ../lab2-agents-md/grades         # 起跑線：20 處違規
 ```
@@ -25,24 +27,37 @@ node check.ts ../lab2-agents-md/grades         # 起跑線：20 處違規
 node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"
 ```
 
+> ⚠️ **畫面會有很長一段時間看起來沒動靜，那是正常的。**
+> `pi -p` 在做完之前**一個字都不會輸出**（實測跑 100 秒完全空白）。
+> `loop.ts` 因此每 2 秒印一次 `⏳ agent 工作中… N 秒`——
+> **看到秒數在跳就代表還活著，不要按 Ctrl+C。** 一輪大約 30～120 秒。
+
 `loop.ts` 做的事只有四步，沒有任何魔法：
 
 ```
 做  →  檢查  →  把「具體的」錯誤餵回去  →  再做
 ```
 
-看一下 `loop.ts`，它總共約 50 行。真正的關鍵是這句：
+**整份只有 100 行出頭，而且註解就是講義。** 打開來看一遍，
+特別是開頭那段對照「迴路的三個零件」的說明。真正的關鍵是這句：
 
-```bash
-run_agent "剛才的修改沒有通過專案的規範檢查，違規如下：
+```ts
+const feedback = `剛才的修改沒有通過專案的規範檢查，違規如下：
 
-$OUT
+${check.out}
 
-請依照 AGENTS.md 修好這些問題。只改必要的地方。" "continue"
+請依照 AGENTS.md 修好這些問題。只改必要的地方。`;
+
+const again = await runAgent(feedback, true);   // true = 接續上一次的對話
 ```
 
-**餵回去的必須是「具體的」錯誤。** 「格式錯誤」沒有用；
-「`calc.ts:12` 用了 `any`」才有用。
+**兩個地方值得停下來看：**
+
+1. **餵回去的必須是「具體的」錯誤。**
+   「格式錯誤」沒有用；「`calc.ts:12` 用了 `any`」才有用。
+2. **`true` 那個參數會加上 `-c`，接續上一次的對話。**
+   所以 agent 記得自己剛剛改了什麼，你只要說「這幾條沒過」，
+   不用把整個任務重講一遍。
 
 ## 驗收
 
@@ -81,11 +96,28 @@ R5 是「註解要說明為什麼，不要複述程式碼」。
 
 有些事情不能事後修。**它把 `.env` 讀出來貼到某個地方之後，你修不回來。**
 
+### 先說 `.env` 是什麼
+
+幾乎每個專案都有一個，裡面放的**全是機密**：
+
+```bash
+DATABASE_URL=postgres://user:password@localhost:5432/dbname
+OPENCODE_API_KEY=sk-你的真 key          # ← Lab 0 那把，真專案裡就放這
+SESSION_SECRET=change-me
+```
+
+它一定被 `.gitignore` 擋掉，所以不會進版本控制。
+**但它就躺在專案根目錄，agent 一個 `read` 就拿得到。**
+
+所以問題是：**怎麼確保 agent 不會去讀它、更不會把內容貼到某個地方？**
+
+### 事前擋
+
 `guard/env-guard.ts` 是一個 pi extension，做的是**事前擋**：
 
 ```bash
 cd ../lab2-agents-md/grades
-cp ../../lab4-loop/guard/env.sample .env
+cp ../../lab4-loop/guard/env.sample .env    # 假的 .env，值都是編的
 
 pi -e ../../lab4-loop/guard/env-guard.ts \
    --provider opencode --model nemotron-3.5-lightning-free \
