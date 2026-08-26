@@ -26,7 +26,8 @@ node src/cli.ts list
 ### 1. 開 pi，選模型
 
 ```bash
-cd habit && pi
+cd habit
+pi
 ```
 
 進去之後打 `/model`，選 `nemotron-3.5-lightning-free`。
@@ -48,8 +49,8 @@ git diff
 
 ### 4. 跑檢核
 
-```bash
-cd .. && node verify.ts
+```bash 
+node ../verify.ts
 ```
 
 把結果填進 [`checklist.md`](checklist.md) 的第一欄。
@@ -57,14 +58,28 @@ cd .. && node verify.ts
 ### 5. 第二次：把規格變成 prompt ← 這步是重點
 
 ```bash
-cd habit
 node restore.ts                  # 程式碼 + 資料一起還原
 ```
 
 **看第 1 次哪幾項沒過，那些就是你要補進 prompt 的東西。**
 `SPEC.md` 已經寫得很清楚了，你的任務是**把它變成一段 prompt**。
 
-再跑一次 `node verify.ts`，填第二欄。
+而「變成 prompt」有**兩種給法**，你要選一種：
+
+| | 怎麼做 | 你在決定什麼 |
+| --- | --- | --- |
+| **A 貼進去** | 把 `SPEC.md` 的內容抄進你的 prompt | **它看到什麼** |
+| **B 指過去** | prompt 裡寫「先讀 `../SPEC.md`」 | **它去哪裡找** |
+
+> 兩種都會動（B 實測可行，pi 讀得到上一層的檔）。
+> **這兩種都叫 context engineering** —— 第 1 次你兩種都沒做，
+> 只給了一句話，剩下的 context 全是它自己 `ls` + `read` 湊出來的。
+
+再跑一次 `node ../verify.ts`，填第二欄。
+
+> **做完基礎的可以試另一種給法**，看檢核表分數有沒有差。
+> 沒差也是結果——那代表這個規格夠短，兩種給法沒有區別。
+> （規格如果是 50 頁，答案就會完全不同——那是節 3 RAG 的題目。）
 
 ## 驗收
 
