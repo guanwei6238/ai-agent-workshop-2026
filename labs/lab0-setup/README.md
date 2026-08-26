@@ -49,14 +49,42 @@ curl -fsSL https://pi.dev/install.sh | sh
 ## ④ 確認它會回話
 
 ```bash
-pi --provider opencode --model nemotron-3.5-lightning-free -p "用繁體中文回我一句 hello"
+pi --provider opencode --model nemotron-3.5-lightning-free
 ```
+
+進去之後**直接打字**：
+
+```
+用繁體中文回我一句 hello
+```
+
+按 Enter，看它回話。
+
+> **為什麼不用 `pi -p "..."`？** `-p` 是非互動模式，跑完就結束，
+> 你看不到它在做什麼。**這門課的重點就是「看它在做什麼」**，所以一律用互動模式。
+>
+> 離開打 `/exit` 或 Ctrl+C 兩次。
 
 ⚠️ **每次都要指定 `--model`**，不然它會用預設模型 —— 那可能是付費的。
 
 **驗收**：終端機看得到模型的回覆。
 
 `node check.ts` 會把上面四步一次檢查完。
+
+## ⑤ 開 VS Code
+
+後面所有 lab 都用 VS Code **看 agent 改了什麼**，不在終端機讀 diff。
+
+```bash
+cd labs/lab1-first-task/habit
+code .          # 沒有 code 指令的話，直接用 VS Code 開這個資料夾
+```
+
+**驗收**：左側側欄有一個分支圖示（**原始檔控制**，`Ctrl+Shift+G`）。
+現在點下去是空的——**因為還沒有人改東西**。Lab 1 讓 agent 改完之後再回來看。
+
+> 沒裝 VS Code 的話現在裝：<https://code.visualstudio.com/>
+> 不用裝任何擴充套件，diff 是內建的。
 
 **提早裝完的人**：叫 pi 讀一份 CSV、輸出成 markdown 表格——那正好是等一下 1-C 的暖身。
 做完的話，去幫旁邊還在裝的人，那是最快的除錯方式。

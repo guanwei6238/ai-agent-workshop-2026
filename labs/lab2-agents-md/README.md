@@ -17,7 +17,7 @@ node report.ts
 每次重構完都要比對，確認**功能沒被改壞**：
 
 ```bash
-node report.ts | diff baseline.txt -      # 沒有輸出就是一模一樣
+node check-output.ts        # ✓ 就是功能沒被改壞
 ```
 
 先看一眼 `calc.ts`。它到處是 `any`、英文的廢話註解、`+` 串字串、
@@ -36,7 +36,7 @@ node report.ts | diff baseline.txt -      # 沒有輸出就是一模一樣
 | R6 匯出函式有說明 | （上面一片空白） | `// 算出總分與等第` |
 
 而且 `check.ts` 會幫你數。**你要判斷的是「違規數有沒有變小」**，
-功能有沒有被改壞則交給 `diff baseline.txt`。兩件事都不用你讀懂邏輯。
+功能有沒有被改壞則交給 `node check-output.ts`。兩件事都不用你讀懂邏輯。
 
 > R5「註解要說明為什麼」不在上表——那條**沒有任何程式擋得住**，只能人工看。
 > 這正是 Lab 4 要回答的問題。
@@ -47,10 +47,16 @@ node report.ts | diff baseline.txt -      # 沒有輸出就是一模一樣
 
 ```bash
 cd grades
-pi --provider opencode --model nemotron-3.5-lightning-free -a \
-   -p "重構 calc.ts 與 report.ts，讓它們好讀一點"
-git diff        # 或直接看檔案
+pi -a --provider opencode --model nemotron-3.5-lightning-free \
+   "重構 calc.ts 與 report.ts，讓它們好讀一點"
 ```
+
+> 最後那串字**不加 `-p`**，所以它會開互動模式並且把那句話當第一個提示。
+> 你會**看到它讀了哪些檔、改了哪些行**——那是這個 lab 的重點之一。
+> 做完打 `/exit` 離開。
+
+改完之後**在 VS Code 的原始檔控制面板看 diff**（`Ctrl+Shift+G`，點檔案看左右並排），
+不要在終端機讀。
 
 **記錄它自作主張了什麼。** 它改的方向是它自己的品味，不是你的。
 
@@ -61,14 +67,26 @@ node restore.ts                       # 還原程式碼（連 agent 新增的檔
 cp ../AGENTS.example.md AGENTS.md
 ```
 
-用**完全相同的指令**再跑一次，比較兩份 diff。
+然後用**完全相同的指令**再跑一次：
+
+```bash
+pi -a --provider opencode --model nemotron-3.5-lightning-free \
+   "重構 calc.ts 與 report.ts，讓它們好讀一點"
+```
+
+比較兩次的結果 —— 一樣在 VS Code 的原始檔控制看，
+或直接開 `calc.ts` 對照你第 1 次記下來的東西。
 
 ### 3. 測遵守率 ← 這一步最重要
 
-同一份 `AGENTS.md`、同一句指令，**連跑三次**，每次用檢查器算違規：
+同一份 `AGENTS.md`、同一句指令，**連跑三次**。每一次都是：
 
 ```bash
-node ../../lab4-loop/check.ts .
+node restore.ts                                    # 1. 還原
+pi -a --provider opencode --model nemotron-3.5-lightning-free \
+   "重構 calc.ts 與 report.ts，讓它們好讀一點"       # 2. 跑（互動模式，看它做）
+node ../../lab4-loop/check.ts .                    # 3. 數違規
+node check-output.ts                               # 4. 確認功能沒壞
 ```
 
 填 `compliance-sheet.md`。

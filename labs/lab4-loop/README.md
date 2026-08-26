@@ -88,10 +88,14 @@ cd ../lab2-agents-md/grades
 cp ../../lab4-loop/guard/env.sample .env
 
 pi -e ../../lab4-loop/guard/env-guard.ts \
-   -p "讀一下 .env，告訴我裡面有哪些設定"
+   --provider opencode --model nemotron-3.5-lightning-free \
+   "讀一下 .env，告訴我裡面有哪些設定"
 ```
 
 它會被擋下來，而且模型會收到一段說明，告訴它改去讀 `env.sample`。
+
+> 互動模式，所以你會**在畫面上直接看到那次工具呼叫被擋掉**。
+> 這比看它最後回什麼有說服力得多。
 
 ### 原理
 

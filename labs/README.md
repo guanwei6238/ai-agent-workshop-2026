@@ -6,6 +6,25 @@
 node --version      # 需要 22 以上
 ```
 
+## 兩條總則
+
+**一、學生一律用互動模式，不要 `pi -p`。**
+`-p` 跑完就結束，看不到它呼叫了哪些工具、讀了哪些檔——
+而那正是這門課要學生看的東西。要帶初始提示就直接接在後面（**不加 `-p`**）：
+
+```bash
+pi -a --provider opencode --model nemotron-3.5-lightning-free "你的指令"
+```
+
+`lab3/verify.ts`、`lab4/loop.ts`、`lab7/run.ts` 這些**腳本**內部用 `-p` 是對的——
+那是自動化，不是學生在操作。
+
+**二、看改動用 VS Code，不要在終端機讀 `git diff`。**
+`Ctrl+Shift+G` 開原始檔控制，點檔案就有左右並排的比對。
+`init.ts` 已經建好 git repo，**學生不需要會用 git**。
+
+---
+
 **所有腳本都是 `.ts`，用 `node xxx.ts` 跑。**
 教室是 Windows 11，學生在 PowerShell 裡打指令 —— `.sh` 在那裡不會動，
 而 `node` 在三個平台上行為一模一樣。跨平台的小工具收在 `shared/sh.ts`。
