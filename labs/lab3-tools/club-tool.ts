@@ -9,7 +9,7 @@
 //
 //   cd workspace
 //   pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
-//   然後輸入：我等一下想去社辦寫扣，E205 現在方便嗎？
+//   然後輸入：我等一下想去社辦寫 code，E205 現在方便嗎？
 
 // ── 社團內部資料。故意寫在這裡，不放成 .json ──────────────────
 // 放成檔案的話 agent 會自己去讀，就試不出工具有沒有被呼叫了。
