@@ -34,6 +34,11 @@ const MODEL = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
 // 停止條件的另一半：就算一直沒過，也不能無限跑下去。
 const MAX_RETRY = Number(process.env.MAX_RETRY ?? 3);
 
+// 每一輪的時間上限。免費模型偶爾會卡在等回應——連線還在、CPU 幾乎 0、
+// 什麼都不回。實測遇過一輪跑超過 5 分鐘還沒動靜。
+// 沒有這個上限，學生會盯著心跳等到下課。
+const TIMEOUT = Number(process.env.TIMEOUT_SEC ?? 150) * 1000;
+
 const TASK = process.argv[2];
 if (!TASK) {
   console.error('用法：node loop.ts "你要它做的事"');
@@ -58,11 +63,39 @@ const runAgent = (prompt: string, continueSession = false) =>
       ...(continueSession ? ["-c"] : []),
       "-p", prompt,
     ],
-    { cwd: TARGET, label: "agent 工作中" },
+    { cwd: TARGET, label: "agent 工作中", timeout: TIMEOUT },
   );
 
+/** 這一輪的 agent 沒跑成功時，給學生明確的下一步。 */
+function explainFailure(r: { code: number; out: string; timedOut?: boolean }) {
+  if (r.timedOut) {
+    console.error(`
+  這通常不是你的錯，是免費模型卡住了。三個選項：
+
+  1. 直接重跑一次（最常見，通常第二次就過）
+
+  2. 換一個模型 —— PowerShell 要先設環境變數，再下指令：
+
+       $env:ZEN_MODEL = "hy3-free"
+       node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"
+
+     （Mac / Linux：ZEN_MODEL=hy3-free node loop.ts "...")
+
+  3. 把任務改小，只改一個檔、一條規則，快很多：
+
+       node loop.ts "把 calc.ts 裡的 any 全部換成真正的型別"
+
+  時間上限也可以調：
+
+       $env:TIMEOUT_SEC = "300"
+       node loop.ts "..."`);
+  } else {
+    console.error("agent 執行失敗：\n" + r.out);
+  }
+}
+
 console.log(`\n目標：${TARGET}`);
-console.log(`模型：${MODEL}　最多重試：${MAX_RETRY} 次`);
+console.log(`模型：${MODEL}　最多重試：${MAX_RETRY} 次　每輪上限：${TIMEOUT / 1000} 秒`);
 console.log(`\n⚠️  pi 在做完之前不會有任何輸出，一輪大約 30～120 秒。`);
 console.log(`   看到 ⏳ 在跳就代表還活著，不要按 Ctrl+C。\n`);
 
@@ -70,7 +103,7 @@ console.log(`   看到 ⏳ 在跳就代表還活著，不要按 Ctrl+C。\n`);
 console.log("── 第 1 次：照你說的做 ──");
 const first = await runAgent(TASK);
 if (first.code !== 0) {
-  console.error("agent 執行失敗：\n" + first.out);
+  explainFailure(first);
   process.exit(1);
 }
 
@@ -109,7 +142,7 @@ ${check.out}
 
   const again = await runAgent(feedback, true);
   if (again.code !== 0) {
-    console.error("agent 執行失敗：\n" + again.out);
+    explainFailure(again);
     process.exit(1);
   }
 }

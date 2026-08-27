@@ -79,24 +79,37 @@ export function runLive(
 export async function runWithHeartbeat(
   cmd: string,
   args: string[],
-  opts: { cwd?: string; label?: string } = {},
-): Promise<RunResult> {
+  opts: { cwd?: string; label?: string; timeout?: number } = {},
+): Promise<RunResult & { timedOut?: boolean }> {
   const { spawn } = await import("node:child_process");
   const label = opts.label ?? "工作中";
+  const limit = opts.timeout ?? 0;
   const started = Date.now();
 
   const tick = setInterval(() => {
     const s = Math.round((Date.now() - started) / 1000);
-    process.stdout.write(`\r  ${C.dim}⏳ ${label}… ${s} 秒${C.reset}   `);
+    const left = limit ? `${C.dim}（${Math.max(0, Math.round(limit / 1000) - s)} 秒後放棄）${C.reset}` : "";
+    process.stdout.write(`\r  ${C.dim}⏳ ${label}… ${s} 秒${C.reset} ${left}   `);
   }, 2000);
 
-  return new Promise<RunResult>((resolve) => {
+  return new Promise<RunResult & { timedOut?: boolean }>((resolve) => {
     const child = spawn(cmd, args, {
       cwd: opts.cwd,
       stdio: ["ignore", "pipe", "pipe"],
       shell: WIN,
       windowsHide: true,
     });
+
+    // 免費模型偶爾會卡在等回應：連線還在、CPU 幾乎 0、什麼都不回。
+    // 沒有這個上限的話，學生會盯著心跳等到下課。
+    let timedOut = false;
+    const bomb = limit
+      ? setTimeout(() => {
+          timedOut = true;
+          child.kill("SIGTERM");
+          setTimeout(() => child.kill("SIGKILL"), 3000);
+        }, limit)
+      : null;
 
     let out = "";
     const collect = (d: Buffer) => {
@@ -110,13 +123,19 @@ export async function runWithHeartbeat(
 
     child.on("close", (code) => {
       clearInterval(tick);
-      process.stdout.write(`\r${" ".repeat(40)}\r`);
+      if (bomb) clearTimeout(bomb);
+      process.stdout.write(`\r${" ".repeat(52)}\r`);
       const s = Math.round((Date.now() - started) / 1000);
-      console.log(`  ${C.dim}（花了 ${s} 秒）${C.reset}`);
-      resolve({ code: code ?? 1, out: out.trim() });
+      if (timedOut) {
+        no(`等了 ${s} 秒還是沒回應，先放棄這一輪。`);
+      } else {
+        console.log(`  ${C.dim}（花了 ${s} 秒）${C.reset}`);
+      }
+      resolve({ code: timedOut ? 124 : (code ?? 1), out: out.trim(), timedOut });
     });
     child.on("error", () => {
       clearInterval(tick);
+      if (bomb) clearTimeout(bomb);
       resolve({ code: 127, out: `找不到指令：${cmd}` });
     });
   });

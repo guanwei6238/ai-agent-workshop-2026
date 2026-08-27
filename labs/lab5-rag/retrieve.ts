@@ -1,7 +1,7 @@
 /**
  * 最笨的檢索。沒有向量、沒有資料庫，就是把文件切一切、找相關的段落。
  *
- * 你要改的只有 score()。
+ * 整份都寫好了，你不用寫程式。要比較兩種做法就改 MODE 那一行。
  */
 
 import { readFileSync, readdirSync } from "node:fs";
@@ -30,23 +30,55 @@ export function loadChunks(dir = join(HERE, "knowledge")): Chunk[] {
   return out;
 }
 
+// ══════════════════════════════════════════════════════════════
+//  檢索的核心：給一個問題和一個段落，算出「這段有多相關」。
+//  分數越高越相關，0 代表無關。
+//
+//  ★ 你不用寫程式。這裡有兩個版本，都已經寫好了。
+//    改下面這一行就能切換，然後比較兩者的差別。
+// ══════════════════════════════════════════════════════════════
+
+/** 改成 "naive" 就換成笨版本，看它多沒用。 */
+const MODE: "keyword" | "naive" = "keyword";
+
 /**
- * 給一個問題和一個段落，算出「這段有多相關」。分數越高越相關，0 代表無關。
+ * 版本 A：最笨的比對。
  *
- * ─────────────────────────────────────────────────────────────
- * TODO　現在這個版本笨到幾乎沒用：它只檢查「整句問題」有沒有原封不動
- *       出現在段落裡。實際上使用者不會那樣問。
- *
- *       把它改成關鍵字比對：
- *         1. 把問題切成字詞（中文可以先用 2 字為一組的滑動視窗，很粗暴但有效）
- *         2. 數有幾個出現在段落裡
- *         3. 回傳命中數
- *
- *       改完跑：node ask.ts --rag "期末成果發表會每組報告幾分鐘？"
- * ─────────────────────────────────────────────────────────────
+ * 檢查「整句問題」有沒有原封不動出現在段落裡。
+ * 問題是：使用者不會那樣問。你問「每組報告幾分鐘？」，
+ * 手冊裡寫的是「每組報告時間 8 分鐘」——一個字都對不上，
+ * 所以永遠回 0，什麼都撈不到。
  */
-export function score(question: string, chunk: Chunk): number {
+function scoreNaive(question: string, chunk: Chunk): number {
   return chunk.text.includes(question) ? 1 : 0;
+}
+
+/**
+ * 版本 B：關鍵字比對。實際在用的就是這個。
+ *
+ * 中文沒有空格，沒辦法用 split(" ") 斷詞。真的斷詞要套 jieba
+ * 那類工具，太重了。所以這裡用最粗暴的辦法：
+ *
+ *   1. 把問題切成「2 個字一組」的滑動視窗
+ *      「報告幾分鐘」→ 報告、告幾、幾分、分鐘
+ *   2. 去掉重複的，然後數有幾組出現在這個段落裡
+ *   3. 命中數就是分數
+ *
+ * 粗暴，但對中文意外地有效。而且它讓你看到：
+ * 檢索沒有魔法，就是在數字面上的命中。
+ */
+function scoreKeyword(question: string, chunk: Chunk): number {
+  const grams: string[] = [];
+  for (let i = 0; i < question.length - 1; i++) {
+    const gram = question.slice(i, i + 2);
+    if (!/[\s，。？?、]/.test(gram)) grams.push(gram);   // 跳過標點
+  }
+  const unique = [...new Set(grams)];
+  return unique.filter((g) => chunk.text.includes(g)).length;
+}
+
+export function score(question: string, chunk: Chunk): number {
+  return MODE === "naive" ? scoreNaive(question, chunk) : scoreKeyword(question, chunk);
 }
 
 /** 取分數最高的前 k 段，連分數一起回傳（分數會讓你看到「兩段同分」這種事）。 */

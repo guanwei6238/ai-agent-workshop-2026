@@ -59,7 +59,9 @@ if (passA && passB) {
     r.out.split("\n").slice(0, 3).forEach((l) => console.log("      " + l));
     tip("No models available → pi 裡面還沒 /login");
     tip("429 → 這把 key 的額度用完了，等一下再試，或先往下做 mock 的部分");
-    tip("502/unavailable → 換模型再試：ZEN_MODEL=hy3-free node check.ts");
+    tip("502 / 一直沒回應 → 換模型再試。PowerShell 分兩行：");
+    tip('  $env:ZEN_MODEL = "hy3-free"');
+    tip("  node check.ts");
     passB = false;
   }
 }

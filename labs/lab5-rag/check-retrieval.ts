@@ -1,5 +1,5 @@
 /**
- * 檢查你的 score() 有沒有寫對。
+ * 檢查檢索有沒有撈到正確的段落。不呼叫模型，秒回。
  *
  *   node check-retrieval.ts
  *
@@ -32,7 +32,8 @@ if (fail === 0) {
   console.log("  四題都檢索到正確的段落了。");
   console.log("  \x1b[2m注意看分數：有沒有哪一題，正確的跟錯誤的分數一樣高？\x1b[0m");
 } else {
-  console.log(`  ${fail} 題沒檢索到。回去看 retrieve.ts 的 score()。`);
+  console.log(`  ${fail} 題沒檢索到。`);
+  console.log(`  如果四題全部沒撈到，去看 retrieve.ts 的 MODE 是不是設成 "naive"。`);
 }
 console.log();
 process.exit(fail);
