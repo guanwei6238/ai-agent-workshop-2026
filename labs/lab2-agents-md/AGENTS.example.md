@@ -24,6 +24,18 @@ node report.ts
 - **R5**　註解要說明**為什麼**這樣做，不要複述程式碼在做什麼。
   （`// sum homework` 這種是複述，沒有價值。）
 - **R6**　每個匯出的函式上面要有一行說明。
+- **R7**　匯出的函式要有完整的 JSDoc 區塊：每個參數一行 `@param`，
+  有回傳值就要有 `@returns`。像這樣：
+
+  ```ts
+  /**
+   * 算出每個學生的總分與等第。
+   *
+   * @param data 從 data.json 讀進來的原始資料
+   * @returns 每個學生一筆，含總分、等第、是否及格
+   */
+  export function calc(data: Course): Result[] {
+  ```
 
 ## 不要做的事
 

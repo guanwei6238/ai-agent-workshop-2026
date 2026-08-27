@@ -18,7 +18,7 @@ cd ../lab2-agents-md/grades
 node restore.ts    # 還原到乾淨狀態
 
 cd ../../lab4-loop
-node check.ts ../lab2-agents-md/grades         # 起跑線：20 處違規
+node check.ts ../lab2-agents-md/grades         # 起跑線：23 處違規
 ```
 
 ## 做法

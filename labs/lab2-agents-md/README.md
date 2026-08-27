@@ -101,7 +101,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 
 填 `compliance-sheet.md`。
 
-> 起始違規數：R1=5　R2=1　R3=5　R4=7　R6=2（**兩個檔案加起來 20 個**）
+> 起始違規數：R1=5　R2=1　R3=5　R4=7　R6=2　R7=3（**兩個檔案加起來 23 個**）
 
 > ⚠️ **兩個檔案都要指定。** 只說「重構 calc.ts」的話，`report.ts` 不會被動到——
 > 檢查器掃的是整個目錄，你會以為它沒改好，其實是它照你說的做。

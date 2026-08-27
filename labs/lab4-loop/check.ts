@@ -128,9 +128,49 @@ for (const f of files) {
         add("R6", f, i + 1, ln, "匯出的函式上面缺少一行說明。");
     }
   });
+
+  // R7 匯出的函式要有完整 JSDoc：每個參數一個 @param，有回傳值就要有 @returns
+  //
+  // 這一條是刻意設計得「機械但囉嗦」的。模型很會寫一行摘要，
+  // 但常常漏掉 @param / @returns —— 所以第一輪多半過不了，
+  // 學生才看得到迴路真的在重試。
+  lines.forEach((ln, i) => {
+    const m = ln.match(/export\s+function\s+[A-Za-z_$][\w$]*\s*\(([^)]*)\)/);
+    if (!m) return;
+
+    // 往上收集連續的註解區塊
+    const doc: string[] = [];
+    for (let j = i - 1; j >= 0; j--) {
+      const t = (lines[j] ?? "").trim();
+      if (t.startsWith("*") || t.startsWith("/*") || t.startsWith("//")) doc.unshift(t);
+      else break;
+    }
+    const block = doc.join("\n");
+
+    const params = m[1]
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean)
+      .map((x) => x.split(/[:=?]/)[0].trim());
+
+    // 要求標籤出現在「行首」（JSDoc 就是這樣寫的）。
+    // 不然註解內文提到「別忘了 @returns」也會被當成有寫。
+    const hasTag = (tag: string) =>
+      new RegExp(`^\\s*\\*?\\s*${tag}\\b`, "m").test(block);
+
+    const missing: string[] = [];
+    for (const name of params) {
+      if (!hasTag(`@param\\s+${name}`)) missing.push(`@param ${name}`);
+    }
+    // 這個檔案裡所有匯出的函式都有回傳值，所以一律要求 @returns
+    if (!hasTag("@returns")) missing.push("@returns");
+
+    if (missing.length)
+      add("R7", f, i + 1, ln, `JSDoc 缺少：${missing.join("、")}。`);
+  });
 }
 
-const RULES = ["R1", "R2", "R3", "R4", "R6"];
+const RULES = ["R1", "R2", "R3", "R4", "R6", "R7"];
 const counts = Object.fromEntries(RULES.map((r) => [r, v.filter((x) => x.rule === r).length]));
 
 if (v.length === 0) {
