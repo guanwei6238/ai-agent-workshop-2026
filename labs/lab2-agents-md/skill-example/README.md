@@ -83,7 +83,7 @@ description: 處理 PDF。
 | `--skill <path>` | 指定單一路徑，可重複 |
 
 ```bash
-mkdir -p .pi/skills
+mkdir .pi/skills
 cp -r ../skill-example/commit-msg .pi/skills/
 ```
 

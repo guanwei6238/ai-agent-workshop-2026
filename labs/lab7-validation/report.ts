@@ -28,7 +28,7 @@ const data = ORDER.map((v) => {
 }).filter(Boolean) as any[];
 
 if (data.length === 0) {
-  console.log("results/ 是空的。先跑 node run.ts --version v1 --n 10");
+  console.log("results/ 是空的。先跑 node run.ts --version v1");
   process.exit(1);
 }
 

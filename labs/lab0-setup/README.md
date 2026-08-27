@@ -110,10 +110,12 @@ code .          # 沒有 code 指令的話，直接用 VS Code 開這個資料�
 
 每個 lab 都有 `mock` backend，完全離線、不花額度：
 
-```bash
-node run.ts --version v1 --n 10 --backend mock     # lab7
-node ask.ts --both --backend mock "你的問題"        # lab5
-ZEN_BACKEND=mock node server.ts                    # lab6
+```powershell
+node run.ts --version v1 --backend mock        # lab7
+node ask.ts --both --backend mock "你的問題"    # lab5
+
+$env:ZEN_BACKEND = "mock"                      # lab6：先設，再跑
+node server.ts
 ```
 
 那是假模型，數字不能當真，**但流程一模一樣**，課照上。

@@ -23,7 +23,12 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 `lab3/verify.ts`、`lab4/loop.ts`、`lab7/run.ts` 這些**腳本**內部用 `-p` 是對的——
 那是自動化，不是學生在操作。
 
-**二、看改動用 VS Code，不要在終端機讀 `git diff`。**
+**二、所有指令都寫成 PowerShell 能跑的形式。**
+教室是 Win11。所以：**不用 `&&` 串接**（Windows PowerShell 5.1 不支援）、
+**不用反斜線續行**、**不用 `mkdir -p`**、環境變數一律寫成 `$env:X = "y"` 再換行下指令。
+`cd`、`cp`、`ls`、`cat` 在 PowerShell 有對應的 alias，可以照用。
+
+**三、看改動用 VS Code，不要在終端機讀 `git diff`。**
 `Ctrl+Shift+G` 開原始檔控制，點檔案就有左右並排的比對。
 `init.ts` 已經建好 git repo，**學生不需要會用 git**。
 
@@ -40,11 +45,13 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 
 ```bash
 # 選用。所有腳本預設用 nemotron-3.5-lightning-free
-# PowerShell：
+# PowerShell（教室用這個）——設一次，之後這個視窗都有效
 $env:ZEN_MODEL = "hy3-free"
-# Mac / Linux：
+
+# Mac / Linux
 export ZEN_MODEL=hy3-free
-cd lab0-setup && node check.ts
+cd lab0-setup
+node check.ts
 ```
 
 ## 一覽
@@ -74,11 +81,15 @@ cd lab0-setup && node check.ts
 
 支援的部分這樣跑：
 
-```bash
-node run.ts --version v1 --n 10 --backend mock     # lab7
-node ask.ts --both --backend mock "你的問題"        # lab5
-ZEN_BACKEND=mock node server.ts                    # lab6
+```powershell
+node run.ts --version v1 --backend mock       # lab7
+node ask.ts --both --backend mock "你的問題"   # lab5
+
+$env:ZEN_BACKEND = "mock"                     # lab6：先設，再跑
+node server.ts
 ```
+
+> Mac / Linux：`ZEN_BACKEND=mock node server.ts` 可以寫成一行。
 
 假模型的行為是**模擬**，數字不能拿來宣稱真模型的表現。
 但流程一模一樣，網路掛掉課照上。

@@ -19,8 +19,8 @@ emails/*.txt  →  LLM  →  JSON  →  validate.ts  →  通過 / 問題清單
 不用 `npm install`，Node 24 直接跑 `.ts`。
 
 ```bash
-node run.ts --version v1 --n 10                 # 走 pi（預設）
-node run.ts --version v1 --n 10 --backend mock  # 離線，不花額度
+node run.ts --version v1                 # 走 pi（預設）
+node run.ts --version v1 --backend mock  # 離線，不花額度
 ```
 
 > ### ⚠️ 用 `--backend mock` 的話，先知道它怎麼評分
@@ -44,7 +44,7 @@ node run.ts --version v1 --n 10 --backend mock  # 離線，不花額度
 ### 1. 先看基準線有多爛
 
 ```bash
-node run.ts --version v1 --n 10
+node run.ts --version v1
 ```
 
 `v1` 是 `prompts.ts` 裡最爛的那一版：「幫我從這封信裡把訂單資料整理成 JSON。」
@@ -61,7 +61,7 @@ node run.ts --version v1 --n 10
 3. 寫死輸出規定（只能有 JSON）
 
 ```bash
-node run.ts --version v2 --n 10
+node run.ts --version v2
 ```
 
 失敗率沒降？**先看失敗類型**：是哪一類沒被你的 prompt 處理到？
@@ -69,7 +69,7 @@ node run.ts --version v2 --n 10
 ### 3. 加上重試迴路
 
 ```bash
-node run.ts --version v3 --n 10
+node run.ts --version v3
 ```
 
 `v3` 用的 prompt 跟 `v2` 一樣，差別是驗證失敗時會把**具體的錯誤訊息**
@@ -88,7 +88,7 @@ node report.ts
 
 **基礎**　你有一張三個版本的失敗率對照，而且能解釋為什麼會這樣。
 
-**如果失敗率沒有下降，那也是有效的結果。** 10 次的樣本波動很大，
+**如果失敗率沒有下降，那也是有效的結果。** 3 次的樣本波動非常大，
 免費模型雜訊更大。替代驗收：**你能分類出 3 種不同的失敗類型，並解釋每種為什麼會發生。**
 
 **進階**　打開 `validate.ts` 最下面，自己補上至少兩條邏輯層規則。

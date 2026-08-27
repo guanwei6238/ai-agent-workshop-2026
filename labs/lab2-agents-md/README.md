@@ -117,7 +117,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 以及一份可以直接跑的 `commit-msg/SKILL.md`。
 
 ```bash
-mkdir -p .pi/skills
+mkdir .pi/skills
 cp -r ../skill-example/commit-msg .pi/skills/
 pi --provider opencode --model nemotron-3.5-lightning-free
 ```

@@ -12,7 +12,7 @@ node server.ts
 
 打開 http://localhost:5173 ，問它「社課什麼時候？」
 
-離線的話：`ZEN_BACKEND=mock node server.ts`
+離線的話：先 `$env:ZEN_BACKEND = "mock"`，再 `node server.ts`
 
 ## 步驟 1：Server + CLI
 
@@ -29,10 +29,13 @@ const r = await ask(String(question), { system: SYSTEM });
 
 ## 步驟 2：Server + API key
 
-```bash
-export OPENCODE_API_KEY=sk-...        # 這一步只有這裡需要
-ZEN_BACKEND=http node server.ts
+```powershell
+$env:OPENCODE_API_KEY = "sk-..."      # 這一步只有這裡需要
+$env:ZEN_BACKEND = "http"
+node server.ts
 ```
+
+> **Mac / Linux 的同學**：把 `$env:X = "y"` 換成 `export X=y`，其他一樣。
 
 現在 `ask()` 改成直接 `fetch` Zen 的 HTTP API。功能一樣，但你拿得到
 真正的 token 用量（頁面下方會顯示）。
@@ -41,7 +44,7 @@ ZEN_BACKEND=http node server.ts
 
 > ⚠️ **直接打 API 的免費額度比走 pi 低很多**，可能幾次就被 429。
 > 那本身就是一課：不同的接法，配額與可控性都不一樣。
-> 撞到就切回 `ZEN_BACKEND=cli`。
+> 撞到就切回來：`$env:ZEN_BACKEND = "cli"`，然後重跑 `node server.ts`。
 
 **兩種接法的 key 都只在後端。** 前端從頭到尾看不到它。
 

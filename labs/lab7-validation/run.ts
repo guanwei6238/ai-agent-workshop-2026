@@ -1,9 +1,9 @@
 /**
  * 跑 N 次、驗證、統計。
  *
- *   node run.ts --version v1 --n 10
- *   node run.ts --version v2 --n 10 --backend mock     # 離線
- *   node run.ts --version v3 --n 10
+ *   node run.ts --version v1               # 預設跑 3 次
+ *   node run.ts --version v2 --backend mock  # 離線，不花額度
+ *   node run.ts --version v3 --n 5           # 想跑更多次就加 --n
  *
  * 結果寫到 results/<version>.json，之後用 report.ts 畫出來。
  */
@@ -24,7 +24,7 @@ function arg(name: string, fallback?: string) {
 }
 
 const version = (arg("version", "v1") as Version);
-const n = Number(arg("n", "10"));
+const n = Number(arg("n", "3"));
 const backend = arg("backend") as Backend | undefined;
 
 const emails = readdirSync(join(HERE, "emails"))

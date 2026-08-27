@@ -119,9 +119,9 @@ SESSION_SECRET=change-me
 cd ../lab2-agents-md/grades
 cp ../../lab4-loop/guard/env.sample .env    # 假的 .env，值都是編的
 
-pi -e ../../lab4-loop/guard/env-guard.ts \
-   --provider opencode --model nemotron-3.5-lightning-free \
-   "讀一下 .env，告訴我裡面有哪些設定"
+pi -e ../../lab4-loop/guard/env-guard.ts --provider opencode --model nemotron-3.5-lightning-free
+
+# 開起來之後輸入：讀一下 .env，告訴我裡面有哪些設定
 ```
 
 它會被擋下來，而且模型會收到一段說明，告訴它改去讀 `env.sample`。
