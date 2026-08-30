@@ -30,7 +30,7 @@ cd habit
 pi
 ```
 
-進去之後打 `/model`，選 `nemotron-3.5-lightning-free`。
+進去之後打 `/model`，選 `mimo-v2.5-free`。
 
 > **用互動模式，不要用 `pi -p`。** 互動模式會顯示它呼叫了哪些工具、
 > 讀了哪些檔、跑了什麼指令——那是 agent 跟網頁版最不一樣的地方。
@@ -79,7 +79,7 @@ node restore.ts                  # 程式碼 + 資料一起還原
 | **A 貼進去** | 把 `SPEC.md` 的內容抄進你的 prompt | **它看到什麼** |
 | **B 指過去** | prompt 裡寫「先讀 `../SPEC.md`」 | **它去哪裡找** |
 
-> 兩種都會動（B 實測可行，pi 讀得到上一層的檔）。
+> 兩種都會動。
 > **這兩種都叫 context engineering** —— 第 1 次你兩種都沒做，
 > 只給了一句話，剩下的 context 全是它自己 `ls` + `read` 湊出來的。
 
@@ -98,7 +98,7 @@ node restore.ts                  # 程式碼 + 資料一起還原
 
 ## 參考：實測過的結果
 
-用 `nemotron-3.5-lightning-free` 實際跑出來的：
+用舊模型 `nemotron-3.5-lightning-free` 實際跑出來的（現在預設是 `mimo-v2.5-free`，數字會不同、方向一樣）：
 
 | | 通過 | 主要問題 |
 | --- | --- | --- |

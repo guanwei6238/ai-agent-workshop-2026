@@ -29,7 +29,7 @@ const HERE = dirOf(import.meta.url);
 
 // 要被重構的專案。預設是 Lab 2 那個成績計算工具。
 const TARGET = process.env.TARGET ?? join(HERE, "..", "lab2-agents-md", "grades");
-const MODEL = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
+const MODEL = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
 
 // 停止條件的另一半：就算一直沒過，也不能無限跑下去。
 const MAX_RETRY = Number(process.env.MAX_RETRY ?? 3);
@@ -76,10 +76,10 @@ function explainFailure(r: { code: number; out: string; timedOut?: boolean }) {
 
   2. 換一個模型 —— PowerShell 要先設環境變數，再下指令：
 
-       $env:ZEN_MODEL = "hy3-free"
+       $env:ZEN_MODEL = "laguna-s-2.1-free"
        node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"
 
-     （Mac / Linux：ZEN_MODEL=hy3-free node loop.ts "...")
+     （Mac / Linux：ZEN_MODEL=laguna-s-2.1-free node loop.ts "...")
 
   3. 把任務改小，只改一個檔、一條規則，快很多：
 

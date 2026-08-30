@@ -8,7 +8,7 @@
 // 怎麼跑（★ 一定要在 workspace/ 裡面跑 ★）：
 //
 //   cd workspace
-//   pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
+//   pi -e ../club-tool.ts --provider opencode --model mimo-v2.5-free
 //   然後輸入：我等一下想去社辦寫 code，E205 現在方便嗎？
 
 // ── 社團內部資料。故意寫在這裡，不放成 .json ──────────────────

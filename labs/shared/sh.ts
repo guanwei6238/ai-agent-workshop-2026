@@ -50,7 +50,7 @@ export function pi(
   args: string[],
   opts: { cwd?: string; timeout?: number } = {},
 ): RunResult {
-  const model = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
+  const model = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
   return run("pi", ["--provider", "opencode", "--model", model, ...args], opts);
 }
 

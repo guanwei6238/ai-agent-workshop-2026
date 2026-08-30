@@ -49,7 +49,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 ## ④ 確認它會回話
 
 ```bash
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 進去之後**直接打字**：
@@ -89,7 +89,10 @@ code .          # 沒有 code 指令的話，直接用 VS Code 開這個資料�
 **提早裝完的人**：叫 pi 讀一份 CSV、輸出成 markdown 表格——那正好是等一下 1-C 的暖身。
 做完的話，去幫旁邊還在裝的人，那是最快的除錯方式。
 
-備用模型：`hy3-free`、`mimo-v2.5-free`。用 `--model` 換。
+備用模型：`laguna-s-2.1-free`、`nemotron-3.5-lightning-free`。用 `--model` 換。
+
+> ⚠️ **`hy3-free` 已經不能用了**（provider 回 `401 Model not supported`），
+> 舊講義如果還寫著它，以這裡為準。
 
 ## 驗收
 
@@ -98,7 +101,7 @@ code .          # 沒有 code 指令的話，直接用 VS Code 開這個資料�
 **進階（提早裝完的人）**　叫它讀一份 CSV，輸出成 markdown 表格：
 
 ```powershell
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 進去之後輸入：

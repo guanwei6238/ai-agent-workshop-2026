@@ -32,6 +32,15 @@ node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"
 > `loop.ts` 因此每 2 秒印一次 `⏳ agent 工作中… N 秒`——
 > **看到秒數在跳就代表還活著，不要按 Ctrl+C。** 一輪大約 30～120 秒。
 
+> **第一輪通常過不了，那正是重點。** 實測 `mimo-v2.5-free`：
+> 第 1 輪 35 秒跑完，**23 處違規 → 剩 1 處**（R1/R2/R3/R6/R7 全清，卡在一個 R4）。
+> 你會親眼看到那 1 處被餵回去、再改一次。
+>
+> ⚠️ **卡住的那條多半是 R4。** 它是唯一「勉強能用程式判斷」的規則，
+> 像 `Math.min(Math.max(score, 0), 100)` 裡的 `100` 也會被算成魔術數字。
+> **這不是壞掉，是誤判——而檢查腳本本身會誤判，就是節 4 的主題。**
+> 修得掉：抽成 `MIN_SCORE` / `MAX_SCORE` 就過了（我驗證過，`check.ts` 回 0）。
+
 `loop.ts` 做的事只有四步，沒有任何魔法：
 
 ```
@@ -74,7 +83,7 @@ node check.ts ../lab2-agents-md/grades
 
 ## 第二個問題（比第一個重要）
 
-打開 `check.ts` 看一下。它實作了 R1、R2、R3、R4、R6，**唯獨沒有 R5**。
+打開 `check.ts` 看一下。它實作了 R1、R2、R3、R4、R6、R7，**唯獨沒有 R5**。
 
 R5 是「註解要說明為什麼，不要複述程式碼」。
 
@@ -88,6 +97,7 @@ R5 是「註解要說明為什麼，不要複述程式碼」。
 | R3 template literal | ✓ grep |
 | R4 魔術數字 | △ 勉強，會有誤判 |
 | R6 函式說明 | ✓ 勉強 |
+| R7 JSDoc `@param` / `@returns` | ✓ 標籤在不在，數得出來 |
 | **R5 註解要說明為什麼** | **✗ 擋不住** |
 
 **結論：能被程式檢查的規則，才能被強制。**
@@ -122,7 +132,7 @@ SESSION_SECRET=change-me
 cd ../lab2-agents-md/grades
 cp ../../lab4-loop/guard/env.sample .env    # 假的 .env，值都是編的
 
-pi -e ../../lab4-loop/guard/env-guard.ts --provider opencode --model nemotron-3.5-lightning-free
+pi -e ../../lab4-loop/guard/env-guard.ts --provider opencode --model mimo-v2.5-free
 
 # 開起來之後輸入：讀一下 .env，告訴我裡面有哪些設定
 ```

@@ -18,7 +18,7 @@ const TRIES = Number(process.env.TRIES ?? 3);
 
 console.log(`  問題：${Q}`);
 console.log(`  工具：${ext}`);
-console.log(`  模型：${process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free"}`);
+console.log(`  模型：${process.env.ZEN_MODEL ?? "mimo-v2.5-free"}`);
 console.log("  （一次呼叫大約 20–40 秒）\n");
 
 for (let i = 1; i <= TRIES; i++) {

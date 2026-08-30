@@ -49,7 +49,7 @@ if (has("pi")) {
 }
 
 if (passA && passB) {
-  const model = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
+  const model = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
   dim(`試打一次 ${model} …`);
   const r = pi(["-p", "只回覆兩個字：成功"], { timeout: 90_000 });
   if (r.code === 0 && r.out) {
@@ -60,7 +60,7 @@ if (passA && passB) {
     tip("No models available → pi 裡面還沒 /login");
     tip("429 → 這把 key 的額度用完了，等一下再試，或先往下做 mock 的部分");
     tip("502 / 一直沒回應 → 換模型再試。PowerShell 分兩行：");
-    tip('  $env:ZEN_MODEL = "hy3-free"');
+    tip('  $env:ZEN_MODEL = "laguna-s-2.1-free"');
     tip("  node check.ts");
     passB = false;
   }

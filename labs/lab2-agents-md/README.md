@@ -25,7 +25,7 @@ node check-output.ts        # ✓ 就是功能沒被改壞
 
 ### 沒寫過 TypeScript？不影響
 
-**你不需要看懂這段程式在算什麼。** 六條規則裡有五條是「用眼睛找得到」的樣子：
+**你不需要看懂這段程式在算什麼。** 七條規則裡有六條是「用眼睛找得到」的樣子：
 
 | 規則 | 違規長這樣 | 遵守長這樣 |
 | --- | --- | --- |
@@ -34,8 +34,17 @@ node check-output.ts        # ✓ 就是功能沒被改壞
 | R3 用 template literal | `"avg: " + s.avg` | `` `avg: ${s.avg}` `` |
 | R4 數字抽成常數 | `score = hw * 0.3` | `score = hw * W_HOMEWORK` |
 | R6 匯出函式有說明 | （上面一片空白） | `// 算出總分與等第` |
+| R7 完整 JSDoc | （沒有 `/** */` 區塊） | 每個參數一行 `@param`，有回傳值就有 `@returns` |
 
-而且 `check.ts` 會幫你數。**你要判斷的是「違規數有沒有變小」**，
+而且檢查腳本會幫你數 —— 在 `grades/` 底下跑：
+
+```bash
+node ../../lab4-loop/check.ts .
+```
+
+（它不在這個 lab 的資料夾裡，是跟 Lab 4 共用同一支。）
+
+**你要判斷的是「違規數有沒有變小」**，
 功能有沒有被改壞則交給 `node check-output.ts`。兩件事都不用你讀懂邏輯。
 
 > R5「註解要說明為什麼」不在上表——那條**沒有任何程式擋得住**，只能人工看。
@@ -47,7 +56,7 @@ node check-output.ts        # ✓ 就是功能沒被改壞
 
 ```bash
 cd grades
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 開起來之後，**在 pi 裡面輸入這一句**：
@@ -76,7 +85,7 @@ cp ../AGENTS.example.md AGENTS.md
 然後**開 pi，輸入完全相同的那一句**：
 
 ```bash
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 ```
@@ -94,7 +103,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 同一份 `AGENTS.md`、同一句指令，**連跑三次**。每一次都是：
 
 1. `node restore.ts` —— 還原
-2. 開 `pi --provider opencode --model nemotron-3.5-lightning-free`，
+2. 開 `pi --provider opencode --model mimo-v2.5-free`，
    輸入**同一句話**，做完 `/exit`
 3. `node ../../lab4-loop/check.ts .` —— 數違規
 4. `node check-output.ts` —— 確認功能沒壞
@@ -119,7 +128,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 ```bash
 mkdir .pi/skills
 cp -r ../skill-example/commit-msg .pi/skills/
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 進去之後打 `/skill:commit-msg`。

@@ -11,10 +11,10 @@
 ## 步驟 3：遵守率
 
 把 `AGENTS.example.md` 複製成 `grades/AGENTS.md`，用**完全相同**的指令
-連跑三次，每次跑完執行：
+連跑三次，每次跑完**在 `grades/` 底下**執行：
 
 ```bash
-node ../lab4-loop/check.ts grades
+node ../../lab4-loop/check.ts .
 ```
 
 把各規則的違規數填進來（0 = 完全遵守）。
@@ -33,7 +33,7 @@ node ../lab4-loop/check.ts grades
 >
 > 指令要說「重構 **calc.ts 與 report.ts**」，兩個檔案都要，否則沒被指定的那個不會動。
 
-**實測參考**（`nemotron-3.5-lightning-free`，只算 `calc.ts`）：
+**實測參考**（舊模型 `nemotron-3.5-lightning-free`，只算 `calc.ts`）：
 
 | | `calc.ts` 的違規數 |
 | --- | --- |

@@ -13,7 +13,7 @@ node --version      # 需要 22 以上
 而那正是這門課要學生看的東西。
 
 ```bash
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 開起來之後才輸入 prompt。**不需要 `-a`** —— `AGENTS.md` 與 `CLAUDE.md`
@@ -44,12 +44,12 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 **之後所有 lab 都透過 `pi` 呼叫，不需要設 API key。**
 
 ```bash
-# 選用。所有腳本預設用 nemotron-3.5-lightning-free
+# 選用。所有腳本預設用 mimo-v2.5-free
 # PowerShell（教室用這個）——設一次，之後這個視窗都有效
-$env:ZEN_MODEL = "hy3-free"
+$env:ZEN_MODEL = "laguna-s-2.1-free"
 
 # Mac / Linux
-export ZEN_MODEL=hy3-free
+export ZEN_MODEL=laguna-s-2.1-free
 cd lab0-setup
 node check.ts
 ```

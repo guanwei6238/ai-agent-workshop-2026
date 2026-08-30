@@ -39,7 +39,7 @@ export interface AskResult {
   ms: number;
 }
 
-const DEFAULT_MODEL = process.env.ZEN_MODEL ?? "nemotron-3.5-lightning-free";
+const DEFAULT_MODEL = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
 const DEFAULT_BACKEND = (process.env.ZEN_BACKEND as Backend) ?? "cli";
 
 export async function ask(prompt: string, opts: AskOptions = {}): Promise<AskResult> {

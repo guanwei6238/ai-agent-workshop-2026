@@ -27,7 +27,7 @@ lab3-tools/
 
 ```bash
 cd workspace
-pi --provider opencode --model nemotron-3.5-lightning-free
+pi --provider opencode --model mimo-v2.5-free
 ```
 
 輸入：
@@ -43,7 +43,7 @@ pi --provider opencode --model nemotron-3.5-lightning-free
 `club-tool.ts` 已經是可以跑的了，先原封不動載進去：
 
 ```bash
-pi -e ../club-tool.ts --provider opencode --model nemotron-3.5-lightning-free
+pi -e ../club-tool.ts --provider opencode --model mimo-v2.5-free
 ```
 
 **輸入同一句話**：
@@ -92,10 +92,38 @@ E205 目前 3 人在裡面，鑰匙歸器材長管理，借用期限到 21:00。
 
 ### 4. 進階：讓它「做」，不只是「查」
 
-再註冊一個 `club_book_room`，收 `room` 和 `hours`，把借用登記起來
-（存在一個變數裡就好，不用真的寫檔）。然後問它：
+在**同一個檔案裡**再註冊一個 `club_book_room`，收 `room` 和 `hours`，
+把借用登記起來（存在一個變數裡就好，不用真的寫檔）。
 
-> 「幫我把 E204 借兩個小時。」
+> ⚠️ **第一個工具要留著。** 兩個工具都註冊，才試得出「模型會不會挑對」。
+
+description 的寫法跟 TODO 2 同一個原則，但多寫一句話：
+**講明這個動作會實際改變狀態**，不是查詢。
+
+改完這樣試：
+
+```bash
+cd workspace
+pi -e ../club-tool.ts --provider opencode --model mimo-v2.5-free
+```
+
+依序輸入這三句，**重點是第三句**：
+
+| 你說 | 預期它做什麼 |
+| --- | --- |
+| `E204 現在方便嗎？` | 呼叫 `club_room_status`，回「現在沒有人」 |
+| `幫我把 E204 借兩個小時。` | 呼叫 `club_book_room`，回登記成功 |
+| `E204 現在方便嗎？` | 再呼叫 `club_room_status` —— **這次會多出借用時間** |
+
+**第三句答得不一樣，就證明狀態真的被改掉了。**
+如果三句都只呼叫同一個工具，那是 description 沒把兩者分開。
+
+> **參考解**：`solution/club-tool-advanced.ts`（兩個工具都在裡面）。
+> 一樣先自己試過再看。
+>
+> ```bash
+> pi -e ../solution/club-tool-advanced.ts --provider opencode --model mimo-v2.5-free
+> ```
 
 **這時候你就給了 agent 一個會改變狀態的能力。**
 `AGENTS.md` 寫「不要亂借教室」擋不住這件事——那是節 2-F 守衛的題目。
@@ -127,4 +155,6 @@ pi 核心刻意不內建 MCP，要另外裝 extension——`../appendix-mcp/` �
 > **`description` 是寫給模型看的，不是寫給人看的。**
 >
 > 這件事跟 skill 的 `description` 是同一個坑，跟節 3「寫給模型看跟寫給人看不一樣」也是同一件事。
-> 而且它失敗的時候**不會有任何錯誤訊息**——工具就靜靜地待在那裡沒被用。
+>
+> 而且**工具沒被呼叫不是「失敗」**——它沒壞也沒報錯，是模型判斷這件事跟它無關。
+> 對系統來說什麼事都沒發生，**所以你不會收到任何錯誤訊息**。
