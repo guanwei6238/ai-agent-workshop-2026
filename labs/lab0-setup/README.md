@@ -91,6 +91,28 @@ code .          # 沒有 code 指令的話，直接用 VS Code 開這個資料�
 
 備用模型：`hy3-free`、`mimo-v2.5-free`。用 `--model` 換。
 
+## 驗收
+
+**基礎**　五步都過，`node check.ts` 全綠。
+
+**進階（提早裝完的人）**　叫它讀一份 CSV，輸出成 markdown 表格：
+
+```powershell
+pi --provider opencode --model nemotron-3.5-lightning-free
+```
+
+進去之後輸入：
+
+```
+讀 labs/lab2-agents-md/grades/data.json，整理成一個 markdown 表格
+```
+
+**盯著看它做了什麼**——它會先 `read` 那個檔，再組表格。
+那正是 Lab 1 要觀察的東西，先預習一次。
+
+> 做完的請**去幫旁邊的人**。這兩天做得最快的那幾位，
+> 幫同桌 debug 的那半小時學到的比自己做一小時多。
+
 ## 卡住了怎麼辦
 
 **先往下走。** 只要步驟 ② 拿到了 key，Lab 5、6、7 都還能做，
