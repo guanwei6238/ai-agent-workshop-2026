@@ -33,7 +33,12 @@ node server.ts
 
 預設走 `pi`（你在 Lab 0 已經 `/login` 過了），**不用設 API key**。
 
-打開 http://localhost:5173 ，問它「社課什麼時候？」
+打開 http://localhost:5173 ，問它「社課什麼時候？」——它應該回
+「每週三 19:00–21:00，在工學院 E204」。
+
+> 這些事實**直接寫在 `server.ts` 的 `SYSTEM` 裡**，沒有做 RAG。
+> 這是刻意的：節 3 講過，資料少到塞得下的時候就整包塞。
+> 六行字就是這個產品的全部知識庫 —— 而且步驟 4 你要想辦法把它挖出來。
 
 離線的話：先 `$env:ZEN_BACKEND = "mock"`，再 `node server.ts`
 
