@@ -71,6 +71,36 @@ const estimateTokens = (s: string) => Math.ceil(s.length / 4);
 
 // ---------------------------------------------------------------- cli
 
+/**
+ * 把 provider 的錯誤翻成「學生知道下一步該做什麼」的話。
+ *
+ * 這些 lab 不像 Lab 1～4 會讓學生自己打 `--model`，模型是這裡決定的 ——
+ * 所以模型掛掉的時候，學生看到的只有一串 JSON，完全不知道是模型的問題。
+ * 免費模型每天都在變（401 下架、429 額度、整個不回應都遇過），
+ * 這段話要直接告訴他們去跑 pick-model.ts。
+ */
+function explainZenError(model: string, code: number, raw: string): string {
+  const head = `呼叫模型失敗（${model}，結束碼 ${code}）\n　${raw}`;
+  let why = "";
+  if (/\b401\b|not supported/i.test(raw))
+    why = `這個模型已經被 provider 下架了。`;
+  else if (/\b429\b|UsageLimit/i.test(raw))
+    why = `這把 key 對這個模型的免費額度用完了。`;
+  else if (/No models available/i.test(raw))
+    why = `pi 還沒登入 —— 開 pi 打 /login。`;
+  else if (raw === "")
+    why = `模型沒有回應（免費模型偶爾整個卡住）。`;
+
+  return (
+    `${head}\n\n` +
+    (why ? `　${why}\n` : "") +
+    `　★ 先跑 node ../pick-model.ts 看今天哪個模型能用，然後：\n` +
+    `　　  PowerShell：  $env:ZEN_MODEL = "換成它印出來的"\n` +
+    `　　  Mac / Linux： export ZEN_MODEL=換成它印出來的\n` +
+    `　趕時間的話加 --backend mock 先把流程跑完，不要乾等。`
+  );
+}
+
 function askCli(prompt: string, model: string, system?: string, cwd?: string): Promise<string> {
   const full = system ? `${system}\n\n---\n\n${prompt}` : prompt;
   const args = ["--provider", "opencode", "--model", model, "-p", full];
@@ -95,8 +125,10 @@ function askCli(prompt: string, model: string, system?: string, cwd?: string): P
       ),
     );
     child.on("close", (code) => {
-      if (code !== 0) reject(new Error(`pi 結束碼 ${code}：${err.trim() || out.trim()}`));
-      else resolve(out.trim());
+      if (code !== 0) {
+        const raw = (err.trim() || out.trim()).slice(0, 300);
+        reject(new Error(explainZenError(model, code, raw)));
+      } else resolve(out.trim());
     });
   });
 }
