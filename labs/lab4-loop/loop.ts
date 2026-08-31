@@ -37,7 +37,9 @@ const MAX_RETRY = Number(process.env.MAX_RETRY ?? 3);
 // 每一輪的時間上限。免費模型偶爾會卡在等回應——連線還在、CPU 幾乎 0、
 // 什麼都不回。實測遇過一輪跑超過 5 分鐘還沒動靜。
 // 沒有這個上限，學生會盯著心跳等到下課。
-const TIMEOUT = Number(process.env.TIMEOUT_SEC ?? 150) * 1000;
+// 實測：150 秒不夠 —— 模型明明在改 code，卻在寫完之前就被砍掉。
+// 300 秒是「慢的模型也做得完，但卡死的不會拖垮整節課」的折衷。
+const TIMEOUT = Number(process.env.TIMEOUT_SEC ?? 300) * 1000;
 
 const TASK = process.argv[2];
 if (!TASK) {
@@ -74,7 +76,8 @@ function explainFailure(r: { code: number; out: string; timedOut?: boolean }) {
 
   1. 直接重跑一次（最常見，通常第二次就過）
 
-  2. 換一個模型 —— PowerShell 要先設環境變數，再下指令：
+  2. 換一個模型。★ 先跑 node ../pick-model.ts 看今天哪個能用 ★
+     （免費模型每天不一樣，不要通靈。）然後設環境變數再下指令：
 
        $env:ZEN_MODEL = "laguna-s-2.1-free"
        node loop.ts "把 calc.ts 與 report.ts 依照 AGENTS.md 重構"

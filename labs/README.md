@@ -46,7 +46,7 @@ pi --provider opencode --model mimo-v2.5-free
 ```bash
 # 選用。所有腳本預設用 mimo-v2.5-free
 # PowerShell（教室用這個）——設一次，之後這個視窗都有效
-$env:ZEN_MODEL = "laguna-s-2.1-free"
+$env:ZEN_MODEL = "laguna-s-2.1-free"   # 先跑 node pick-model.ts 看今天哪個能用
 
 # Mac / Linux
 export ZEN_MODEL=laguna-s-2.1-free
