@@ -23,7 +23,7 @@
 // ════════════════════════════════════════════════════════════════
 
 import { join } from "node:path";
-import { run, runWithHeartbeat, dirOf } from "../shared/sh.ts";
+import { run, runWithHeartbeat, withPromptFile, dirOf } from "../shared/sh.ts";
 
 const HERE = dirOf(import.meta.url);
 
@@ -57,16 +57,26 @@ if (!TASK) {
  * 這很重要：agent 因此記得自己剛剛改了什麼，
  * 你只要跟它說「這幾條沒過」，不用把整個任務重講一遍。
  */
-const runAgent = (prompt: string, continueSession = false) =>
-  runWithHeartbeat(
-    "pi",
+const runAgent = async (prompt: string, continueSession = false) => {
+  // ⚠️ prompt 走檔案，不走 argv。第 2 輪之後餵回去的違規清單是多行的，
+  // 在 Windows 上會被 cmd.exe 從第一個換行處切斷 —— 而且不會有錯誤訊息，
+  // 只會看起來像「它第二輪突然聽不懂了」。詳見 shared/sh.ts 的 withPromptFile。
+  const fp = withPromptFile(
     [
       "--provider", "opencode", "--model", MODEL,
       ...(continueSession ? ["-c"] : []),
       "-p", prompt,
     ],
-    { cwd: TARGET, label: "agent 工作中", timeout: TIMEOUT },
+    TARGET,
   );
+  try {
+    return await runWithHeartbeat("pi", fp.args, {
+      cwd: fp.cwd, label: "agent 工作中", timeout: TIMEOUT,
+    });
+  } finally {
+    fp.cleanup();
+  }
+};
 
 /** 這一輪的 agent 沒跑成功時，給學生明確的下一步。 */
 function explainFailure(r: { code: number; out: string; timedOut?: boolean }) {

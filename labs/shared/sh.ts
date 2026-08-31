@@ -3,6 +3,9 @@
 // 為什麼不用 .sh：教室是 Windows 11，學生在 PowerShell 裡打指令，
 // `./verify.sh` 不會動。每個 lab 本來就需要 Node 24，所以腳本一律寫成 .ts。
 import { spawnSync } from "node:child_process";
+import { writeFileSync, rmSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join as pathJoin } from "node:path";
 
 // Windows 的 npm 全域指令是 .cmd，直接 spawn 會 ENOENT
 const WIN = process.platform === "win32";
@@ -45,13 +48,50 @@ export function has(cmd: string): boolean {
   return run(WIN ? "where" : "which", [cmd]).code === 0;
 }
 
+/**
+ * 把 argv 裡 `-p` 後面那段 prompt 換成 `@檔名`，prompt 本身寫進檔案。
+ *
+ * ⚠️ Windows 專屬的正確性問題，但兩邊都套用比較不會分岔。
+ *
+ * Windows 的 npm 裝的是 `pi.cmd`，Node 的 spawn 不開 shell 找不到它，所以
+ * 這裡必須 `shell: true`。而 `shell: true` 的 argv **不會被跳脫，只會被串接**
+ * ——含換行的 prompt 會被 cmd.exe 在第一個換行處切斷，含空白的會被拆成兩個參數。
+ *
+ * Lab 4 的重試回饋是多行的（違規清單），Lab 3 的問句含空白，兩個都會中。
+ * 而且不會有任何錯誤訊息，只會看起來「模型變笨了」。
+ *
+ * 換成 `@檔名` 之後 argv 只剩短短的相對檔名，cmd.exe 弄不壞它。
+ * 用相對檔名 + cwd，是為了避開 Windows 路徑可能含空白。
+ */
+export function withPromptFile(
+  args: string[],
+  dir?: string,
+): { args: string[]; cwd: string; cleanup: () => void } {
+  const i = args.indexOf("-p");
+  const cwd = dir ?? mkdtempSync(pathJoin(tmpdir(), "pi-prompt-"));
+  if (i === -1 || i === args.length - 1) return { args, cwd, cleanup: () => {} };
+
+  const name = ".pi-prompt.md";
+  const path = pathJoin(cwd, name);
+  writeFileSync(path, args[i + 1], "utf8");
+  const next = [...args];
+  next[i + 1] = `@${name}`;
+  return { args: next, cwd, cleanup: () => rmSync(path, { force: true }) };
+}
+
 /** 跑一個 pi 指令。集中在這裡，模型與 provider 只寫一次。 */
 export function pi(
   args: string[],
   opts: { cwd?: string; timeout?: number } = {},
 ): RunResult {
   const model = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
-  return run("pi", ["--provider", "opencode", "--model", model, ...args], opts);
+  const full = ["--provider", "opencode", "--model", model, ...args];
+  const fp = withPromptFile(full, opts.cwd);
+  try {
+    return run("pi", fp.args, { ...opts, cwd: fp.cwd });
+  } finally {
+    fp.cleanup();
+  }
 }
 
 /** 直接把子行程的輸出接到終端機（要即時看到 agent 在做什麼時用）。 */

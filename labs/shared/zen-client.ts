@@ -10,7 +10,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -124,15 +124,42 @@ function explainZenError(model: string, code: number, raw: string): string {
   );
 }
 
+/**
+ * 把 prompt 寫成檔案再用 `@檔名` 餵給 pi，而不是塞進 argv。
+ *
+ * ⚠️ 這不是為了漂亮，是 Windows 上的正確性問題。
+ *
+ * Windows 的 npm 裝的是 `pi.cmd`，Node 的 spawn 不開 shell 找不到它，所以這裡
+ * 必須 `shell: true`。但 `shell: true` 的 argv **不會被跳脫，只會被串接**
+ * （Node 自己的 DEP0190 警告就是在講這件事）—— 於是含換行的 prompt 會被
+ * cmd.exe 在第一個換行處切斷。
+ *
+ * 實際發生過：Lab 5 的 RAG prompt 第一行是「以下是社團手冊的相關段落：」，
+ * 模型只收到那一行，於是回「請直接貼上社團手冊的段落內容」。
+ * 檢索明明成功了，看起來卻像 RAG 沒生效 —— 而且完全沒有錯誤訊息。
+ *
+ * 用 `@檔名` 之後 argv 只剩短短的相對檔名，沒有換行也沒有空白，cmd.exe 弄不壞它。
+ * 寫在 cwd 裡並用相對路徑，是為了避開 Windows 暫存路徑可能含空白的問題。
+ */
+const PROMPT_FILE = ".pi-prompt.md";
+
 function askCli(prompt: string, model: string, system?: string, cwd?: string): Promise<string> {
   const full = system ? `${system}\n\n---\n\n${prompt}` : prompt;
-  const args = ["--provider", "opencode", "--model", model, "-p", full];
+  const dir = cwd ?? isolatedDir();
+  const promptPath = join(dir, PROMPT_FILE);
+  writeFileSync(promptPath, full, "utf8");
+
+  // --no-tools：這幾個 lab 都是「問模型一個問題」，不需要任何工具。
+  // 節 2 講的「拜託 vs 強制」—— 這一行就是強制，比在 prompt 裡寫「不要讀檔」可靠。
+  const args = [
+    "--provider", "opencode", "--model", model,
+    "--no-tools", "-p", `@${PROMPT_FILE}`,
+  ];
   return new Promise((resolve, reject) => {
-    // Windows 上 npm 裝的是 pi.cmd，spawn 不開 shell 找不到它（ENOENT）。
     const child = spawn("pi", args, {
       stdio: ["ignore", "pipe", "pipe"],
       shell: process.platform === "win32",
-      cwd,
+      cwd: dir,
     });
     let out = "";
     let err = "";
@@ -148,6 +175,7 @@ function askCli(prompt: string, model: string, system?: string, cwd?: string): P
       ),
     );
     child.on("close", (code) => {
+      rmSync(promptPath, { force: true });
       if (code !== 0) {
         const raw = (err.trim() || out.trim()).slice(0, 300);
         reject(new Error(explainZenError(model, code, raw)));
