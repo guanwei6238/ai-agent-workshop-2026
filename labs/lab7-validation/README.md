@@ -18,6 +18,10 @@ node ../pick-model.ts
 > 這個 lab 要**連續呼叫很多次**模型（每封 email 一次 × 兩組 prompt），
 > 是全課最容易撞到 429 的一個。撞到就用 `--backend mock` 先把流程跑完。
 
+> **為什麼模型看不到 `validate.ts`：** `ask()` 一律跑在空的暫存目錄裡。
+> 不隔離的話，agent 會讀到 `validate.ts`（評分它的驗證器）跟 `order.json`
+> （一份完整的正確答案）——那樣跑出來的通過率就沒有意義了。
+
 ## 這個 Lab 在做什麼
 
 從一封自由格式的訂購 email，讓 LLM 抽出結構化的訂單 JSON。

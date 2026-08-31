@@ -10,6 +10,9 @@
  */
 
 import { spawn } from "node:child_process";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 export type Backend = "cli" | "http" | "mock";
 
@@ -39,6 +42,26 @@ export interface AskResult {
   ms: number;
 }
 
+/**
+ * `ask()` 預設跑在一個空的暫存目錄裡。
+ *
+ * ⚠️ 這不是潔癖，是正確性問題。pi 是 agent，`-p` 模式下它一樣有讀檔與
+ * grep 的能力。如果讓它在 lab 的目錄裡跑，它會讀到不該讀的東西：
+ *
+ *   Lab 5  讀到 knowledge/club-handbook.md 與 ask.ts
+ *          → 不回答問題，改成「解釋這支腳本」然後反問你要問哪一題
+ *   Lab 7  讀到 validate.ts（評分它的驗證器）與 order.json（正確答案）
+ *          → 整個 eval 的數字失去意義
+ *   Lab 6  讀到 README.md
+ *          → 看起來像答對了，其實是抄的
+ *
+ * 這三個 lab 要的都是「問模型一個問題」，不是「讓 agent 在我的專案裡工作」。
+ * 所以隔離是對的預設值；真的需要讓它看到檔案的呼叫端再自己傳 cwd。
+ */
+let ISOLATED: string | undefined;
+const isolatedDir = () =>
+  (ISOLATED ??= mkdtempSync(join(tmpdir(), "zen-no-context-")));
+
 const DEFAULT_MODEL = process.env.ZEN_MODEL ?? "mimo-v2.5-free";
 const DEFAULT_BACKEND = (process.env.ZEN_BACKEND as Backend) ?? "cli";
 
@@ -60,7 +83,7 @@ export async function ask(prompt: string, opts: AskOptions = {}): Promise<AskRes
     tokens = r.tokens ?? estimateTokens(prompt + r.text);
     estimate = r.tokens === undefined;
   } else {
-    text = await askCli(prompt, model, opts.system, opts.cwd);
+    text = await askCli(prompt, model, opts.system, opts.cwd ?? isolatedDir());
     tokens = estimateTokens(prompt + text);
   }
 
