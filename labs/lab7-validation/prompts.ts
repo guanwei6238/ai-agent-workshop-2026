@@ -41,37 +41,13 @@ const SCHEMA = `{
 
 const V2 = (email: string) => `幫我從這封信裡把訂單資料整理成 JSON。
 
-請完全依照這個 schema：
+${email}
 
-${SCHEMA}
+<!-- TODO(1)：把檔案上方 SCHEMA 常數的內容貼到這裡 -->
 
-錯誤示範（不要這樣做）——反例：
+<!-- TODO(2)：放一個「壞掉的輸出長什麼樣、以及它壞在哪」的例子 -->
 
-\`\`\`json
-{
-  "order_id": "PO-20260901-014",
-  "customer": "資工系學會",
-  "currency": "NTD",
-  "items": [{ "name": "藍色原子筆", "unit_price": 25, "qty": 12 }],
-  "subtotal": 300,
-  "discount": 50,
-  "total": 300,
-  "status": "pending",
-  "order_date": "2026-09-01",
-  "ship_by": "2026-09-05"
-}
-\`\`\`
-
-它壞在哪：
-1. currency 寫成 "NTD"，但 schema 只允許 "TWD" | "USD" | "JPY"（新台幣請用 TWD）
-2. 包了 markdown code fence（\`\`\`），導致 JSON.parse 失敗
-3. 算術錯誤：total 應該是 subtotal - discount = 300 - 50 = 250，不是 300。每次輸出前請自己把 items 重新加總驗算 subtotal，再算一次 total = subtotal - discount
-4. 前面還多了開場白文字，也會造成驗證失敗
-
-輸出規定：只輸出 JSON 本身。不要 markdown code fence，不要開場白，不要任何解釋。
-
-訂購信內容如下：
-${email}`;
+<!-- TODO(3)：寫死輸出規定（只能有 JSON，其他一律不行） -->`;
 
 // ────────────────────────────────────────────────────── v3
 
