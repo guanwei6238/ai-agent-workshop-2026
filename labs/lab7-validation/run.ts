@@ -13,7 +13,14 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ask, type Backend } from "../shared/zen-client.ts";
 import { validate, describe } from "./validate.ts";
-import { buildPrompt, buildRetry, type Version } from "./prompts.ts";
+import type { Version } from "./prompts.ts";
+
+// --solution 跑參考解（solution/prompts.ts），不加就跑你自己填的 prompts.ts。
+// 用動態 import 是因為要在執行期才決定讀哪一份。
+const useSolution = process.argv.includes("--solution");
+const { buildPrompt, buildRetry } = await import(
+  useSolution ? "./solution/prompts.ts" : "./prompts.ts"
+);
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const MAX_RETRY = 2;
@@ -32,7 +39,7 @@ const emails = readdirSync(join(HERE, "emails"))
   .sort()
   .map((f) => ({ name: f, text: readFileSync(join(HERE, "emails", f), "utf8") }));
 
-console.log(`版本 ${version}　次數 ${n}　backend ${backend ?? process.env.ZEN_BACKEND ?? "cli"}`);
+console.log(`版本 ${version}　次數 ${n}　backend ${backend ?? process.env.ZEN_BACKEND ?? "cli"}${useSolution ? "　\x1b[2m（參考解）\x1b[0m" : ""}`);
 console.log(`測資 ${emails.length} 封，輪流使用\n`);
 
 type Row = {
